@@ -13,7 +13,7 @@ export const env = createEnv({
       .default('3000')
       .transform((s) => parseInt(s)),
 
-    I18N: z.string().default('en'),
+    I18N: z.string().default('fr'),
 
     API_URL: z.string().url(),
 
