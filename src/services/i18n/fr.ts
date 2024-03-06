@@ -9,7 +9,7 @@ export const frLang: typeof enLang = {
 
   discordCommands: 'Chargement des commandes Discord',
   discordCommandLoaded: 'Commande chargée : /{{command}} ✅',
-  discordInvite: 'Pour inviter le bot : {{lien}}',
+  discordInvite: 'Pour inviter le bot : {{link}}',
   discordBotReady: 'En ligne ! Connecté en tant que {{username}}',
 
   aliveCommand: 'dispo',
