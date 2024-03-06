@@ -114,11 +114,18 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-      var socket = io();
+      var socket = io({
+        'reconnection': true,
+        'reconnectionDelay': 1000,
+        'reconnectionDelayMax': 1000,
+        'reconnectionAttempts': 999
+      });
 
-      //Get query param
-      const urlParams = new URLSearchParams(window.location.search);
-      socket.emit("join-room", "messages-"+ urlParams.get('guildId'));
+      socket.on('connect', () => {
+        //Get query param
+        const urlParams = new URLSearchParams(window.location.search);
+        socket.emit("join-room", "messages-" + urlParams.get('guildId'));
+      });
 
       socket.on("new-message", function (data) {
         console.debug(data);
