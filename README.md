@@ -71,12 +71,13 @@ Vous pouvez l'installer manuellement:
 **Exigences**
 - [Node 20](https://nodejs.org/en)
 - [pnpm](https://pnpm.io/fr/installation)
-- système avec [ffmpeg](https://ffmpeg.org/)
+- OS avec [ffmpeg](https://ffmpeg.org/)
 
-`` `bash
-Installation de PNPM
+```bash
+cp .env.example .env # Remplacer DISCORD_TOKEN/DISCORD_CLIENT_ID/API_URL avec vos informations
+pnpm install
 pnpm dev
-`` '
+```
 
 #### 3 - Invitez le bot
 
@@ -164,6 +165,7 @@ You can install it manually :
 - System with [FFmpeg](https://ffmpeg.org/) install
 
 ```bash
+cp .env.example .env # Replace DISCORD_TOKEN/DISCORD_CLIENT_ID/API_URL with your informations
 pnpm install
 pnpm dev
 ```
