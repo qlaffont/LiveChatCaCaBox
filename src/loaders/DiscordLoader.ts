@@ -6,6 +6,8 @@ import { loadMessagesWorker } from '../components/messages/messagesWorker';
 import { talkCommand } from '../components/messages/talkCommand';
 import { hideTalkCommand } from '../components/messages/hidetalkCommand';
 import { clientCommand } from '../components/discord/clientCommand';
+import { helpCommand } from '../components/discord/helpCommand';
+import { infoCommand } from '../components/discord/infoCommand';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const loadDiscord = async (fastify: FastifyCustomInstance) => {
@@ -41,18 +43,22 @@ const loadDiscordCommands = async () => {
 
     const discordCommandsToRegister = [];
 
-    const commands = [aliveCommand(), sendCommand(), talkCommand(), clientCommand()];
+    const commands = [aliveCommand(), sendCommand(), talkCommand(), clientCommand(), helpCommand(), infoCommand()];
     const hideCommands = [hideSendCommand(), hideTalkCommand()];
 
     if (env.HIDE_COMMANDS_DISABLED !== 'true') {
       commands.push(...hideCommands);
     }
 
+    global.commandsLoaded = [];
+
     for (const command of commands) {
       //@ts-ignore
       discordClient.commands.set(command.data.name, command);
       //@ts-ignore
       discordCommandsToRegister.push(command.data.toJSON());
+
+      global.commandsLoaded.push(command.data.name);
 
       logger.info(`[DISCORD] ${rosetty.t('discordCommandLoaded', { command: command.data.name })}`);
     }
