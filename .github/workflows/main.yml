@@ -1,0 +1,52 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    name: Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: ["16.x", "18.x"]
+        os: [ubuntu-latest]
+
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: docker
+          POSTGRES_PASSWORD: docker
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v3.0.0
+        with:
+          version: 7.13.4
+
+      - name: Install deps and build (with cache)
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: cp .env.example .env && pnpm migration:up && pnpm test

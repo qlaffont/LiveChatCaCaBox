@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "ES6",
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "noUnusedParameters": false,
+    "allowJs": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"],
+    },
+    "skipLibCheck": true,
+    "lib":["ES2021"]
+  },
+  "include": ["src/**/*", "src/types/module.d.ts"],
+}
+

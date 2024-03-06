@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Queue {
+  id   String @id @default(uuid())
+
+  type String
+  content String
+
+  author String?
+  authorImage String?
+
+  submissionDate DateTime @default(now())
+  executionDate DateTime @default(now())
+  duration Int
+  discordGuildId String
+
+  @@index([type])
+}
+
+
+model Guild {
+  id String @id
+  busyUntil DateTime? 
+}

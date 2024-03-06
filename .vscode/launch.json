@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Start API",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/wds",
+      "args": ["--inspect", "${workspaceRoot}/src/index.ts", "|", "pnpm", "pino-pretty" ],
+      "restart": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Start Worker",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/wds",
+      "args": ["--inspect", "${workspaceRoot}/src/worker.ts", "|", "pnpm", "pino-pretty" ],
+      "restart": true,
+      "console": "integratedTerminal"
+    }
+  ]
+}
