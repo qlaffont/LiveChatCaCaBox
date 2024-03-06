@@ -1,4 +1,14 @@
-import { REST, Client, Events, Collection, Routes, EmbedBuilder } from 'discord.js';
+import {
+  REST,
+  Client,
+  Events,
+  Collection,
+  Routes,
+  EmbedBuilder,
+  ChannelType,
+  PermissionFlagsBits,
+  IntentsBitField,
+} from 'discord.js';
 import { aliveCommand } from '../components/discord/aliveCommand';
 import { sendCommand } from '../components/messages/sendCommand';
 import { hideSendCommand } from '../components/messages/hidesendCommand';
@@ -14,7 +24,7 @@ export const loadDiscord = async (fastify: FastifyCustomInstance) => {
   const rest = new REST({ version: '10' }).setToken(env.DISCORD_TOKEN);
   global.discordRest = rest;
 
-  const client = new Client({ intents: [] });
+  const client = new Client({ intents: [IntentsBitField.Flags.Guilds] });
   global.discordClient = client;
 
   // Load all discord commands
@@ -29,6 +39,25 @@ export const loadDiscord = async (fastify: FastifyCustomInstance) => {
         link: `https://discord.com/oauth2/authorize?client_id=${env.DISCORD_CLIENT_ID}&scope=bot`,
       })}`,
     );
+  });
+
+  client.on(Events.GuildCreate, (g) => {
+    const channel = g.channels.cache.find(
+      (channel) =>
+        channel.type === ChannelType.GuildText &&
+        channel.permissionsFor(g.members.me!).has(PermissionFlagsBits.SendMessages),
+    );
+
+    if (channel && channel.isTextBased()) {
+      channel.send({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle(rosetty.t('howToUseTitle')!)
+            .setDescription(rosetty.t('howToUseDescription')!)
+            .setColor(0x3498db),
+        ],
+      });
+    }
   });
 
   await client.login(env.DISCORD_TOKEN);
