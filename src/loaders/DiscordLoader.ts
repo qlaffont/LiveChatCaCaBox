@@ -18,6 +18,10 @@ import { hideTalkCommand } from '../components/messages/hidetalkCommand';
 import { clientCommand } from '../components/discord/clientCommand';
 import { helpCommand } from '../components/discord/helpCommand';
 import { infoCommand } from '../components/discord/infoCommand';
+import { setDefaultTimeCommand } from '../components/discord/setDefaultTimeCommand';
+import { setDisplayMediaFullCommand } from '../components/discord/setDisplayFullCommand';
+import { setMaxTimeCommand } from '../components/discord/setMaxTimeCommand';
+import { stopCommand } from '../components/messages/stopCommand';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const loadDiscord = async (fastify: FastifyCustomInstance) => {
@@ -28,7 +32,7 @@ export const loadDiscord = async (fastify: FastifyCustomInstance) => {
   global.discordClient = client;
 
   // Load all discord commands
-  await loadDiscordCommands();
+  await loadDiscordCommands(fastify);
   loadDiscordCommandsHandler();
   loadMessagesWorker(fastify);
 
@@ -63,7 +67,7 @@ export const loadDiscord = async (fastify: FastifyCustomInstance) => {
   await client.login(env.DISCORD_TOKEN);
 };
 
-const loadDiscordCommands = async () => {
+const loadDiscordCommands = async (fastify: FastifyCustomInstance) => {
   try {
     logger.info(`[DISCORD] ${rosetty.t('discordCommands')}`);
 
@@ -72,7 +76,18 @@ const loadDiscordCommands = async () => {
 
     const discordCommandsToRegister = [];
 
-    const commands = [aliveCommand(), sendCommand(), talkCommand(), clientCommand(), helpCommand(), infoCommand()];
+    const commands = [
+      aliveCommand(),
+      sendCommand(),
+      talkCommand(),
+      clientCommand(),
+      helpCommand(),
+      infoCommand(),
+      setDefaultTimeCommand(),
+      setDisplayMediaFullCommand(),
+      setMaxTimeCommand(),
+      stopCommand(fastify),
+    ];
     const hideCommands = [hideSendCommand(), hideTalkCommand()];
 
     if (env.HIDE_COMMANDS_DISABLED !== 'true') {
@@ -110,7 +125,7 @@ const loadDiscordCommandsHandler = () => {
     }
 
     try {
-      await command.handler(interaction);
+      await command.handler(interaction, discordClient);
     } catch (error) {
       logger.error(error);
 

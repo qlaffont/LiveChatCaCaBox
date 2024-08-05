@@ -2,6 +2,7 @@ import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.j
 import { QueueType } from '../../services/prisma/loadPrisma';
 import { getContentInformationsFromUrl } from '../../services/content-utils';
 import { deleteGtts, promisedGtts, readGttsAsStream } from '../../services/gtts';
+import { getDurationFromGuildId } from '../../services/utils';
 
 export const hideTalkCommand = () => ({
   data: new SlashCommandBuilder()
@@ -54,7 +55,10 @@ export const hideTalkCommand = () => ({
         }),
         type: QueueType.VOCAL,
         discordGuildId: interaction.guildId!,
-        duration: additionalContent.mediaDuration ? Math.ceil(additionalContent.mediaDuration) : env.DEFAULT_DURATION,
+        duration: await getDurationFromGuildId(
+          additionalContent.mediaDuration ? Math.ceil(additionalContent.mediaDuration) : undefined,
+          interaction.guildId!,
+        ),
       },
     });
   },

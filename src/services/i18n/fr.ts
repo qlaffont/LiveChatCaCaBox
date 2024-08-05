@@ -6,6 +6,7 @@ export const frLang: typeof enLang = {
   serverStarted: 'Le serveur est lancé !',
   success: 'Succès !',
   error: 'Erreur !',
+  notAllowed: 'Action non autorisée !',
 
   discordCommands: 'Chargement des commandes Discord',
   discordCommandLoaded: 'Commande chargée : /{{command}} ✅',
@@ -59,4 +60,27 @@ export const frLang: typeof enLang = {
   hideTalkCommandOptionVoice: 'dire',
   hideTalkCommandOptionVoiceDescription: 'Texte à dire',
   hideTalkCommandAnswer: 'Contenu reçu ! Il sera bientôt joué !',
+
+  setDefaultTimeCommand: 'config-defaut',
+  setDefaultTimeCommandDescription:
+    "Définir le temps par défaut pour l'affichage (Par défaut : 5 seconds) (En secondes)",
+  setDefaultTimeCommandOptionText: 'nombre',
+  setDefaultTimeCommandOptionTextDescription: 'Nombre de seconds',
+  setDefaultTimeCommandAnswer: 'Le temps par défaut défini !',
+
+  setMaxTimeCommand: 'config-max',
+  setMaxTimeCommandDescription: "Définir le temps maximal pour l'affichage (En secondes)",
+  setMaxTimeCommandOptionText: 'nombre',
+  setMaxTimeCommandOptionTextDescription: 'Nombre de seconds',
+  setMaxTimeCommandAnswer: 'Temps maximum défini !',
+
+  setDisplayMediaFullCommand: 'config-displayfull',
+  setDisplayMediaFullCommandDescription: 'Définir si les médias doivent être affichés en plein écran',
+  setDisplayMediaFullCommandOptionText: 'value',
+  setDisplayMediaFullCommandOptionTextDescription: 'Oui  / Non',
+  setDisplayMediaFullCommandAnswer: 'Valeur défini !',
+
+  stopCommand: 'stop',
+  stopCommandDescription: 'Supprime le média',
+  stopCommandAnswer: 'Média interrompu !',
 };

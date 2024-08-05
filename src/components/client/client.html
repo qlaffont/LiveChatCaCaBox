@@ -15,18 +15,19 @@
   <div class="absolute top-3 left-3 hidden flex-col items-center z-50" id="author-block">
     <div class="w-fit">
       <div class="border-4 rounded-full border-[#57F287] inline-block">
-        <img id="author-img" src=""
-          class="w-full h-full max-w-[70px] max-h-[70px] rounded-full" />
+        <img id="author-img" src="" class="w-full h-full max-w-[70px] max-h-[70px] rounded-full" />
       </div>
     </div>
     <div>
-      <p id="author-username" class="text-center font-medium text-white text-lg max-w-[100px]" style="text-shadow: #57F287 1px 0 10px;"></p>
+      <p id="author-username" class="text-center font-medium text-white text-lg max-w-[100px]"
+        style="text-shadow: #57F287 1px 0 10px;"></p>
     </div>
   </div>
 
   <div class="absolute w-screen h-screen flex items-end justify-center top-0 left-0 z-20 px-5 pb-5">
     <div>
-      <p id="message-text" class="text-white text-5xl font-medium text-center" style="text-shadow:white 1px 0 10px;"></p>
+      <p id="message-text" class="text-white text-5xl font-medium text-center" style="text-shadow:white 1px 0 10px;">
+      </p>
     </div>
   </div>
 
@@ -36,23 +37,23 @@
   </div>
 
   <script>
-    function generateImg(src){
-      return '<img id="message-img" src="' + src + '" />';
+    function generateImg(src, displayFull) {
+      return '<img id="message-img" ' + (displayFull ? 'class="aspect-auto w-full h-full max-w-[100vw] max-h-[100vh]"' : '') + ' src="' + src + '" />';
     }
 
-    function generateAudioVideo(src) {
-      return '<media-player id="message-player" title="Sprite Fight" src="' + src + '" autoplay controls>'+
-        '<media-provider></media-provider>'+
-        '<media-audio-layout></media-audio-layout>'+
-        '<media-video-layout></media-video-layout>'+
-      '</media-player>';
+    function generateAudioVideo(src, displayFull) {
+      return '<media-player id="message-player" ' + (displayFull ? "class='aspect-auto w-[100vw] h-[100vh]'" : '') + ' src="' + src + '" autoplay controls>' +
+        '<media-provider></media-provider>' +
+        '<media-audio-layout></media-audio-layout>' +
+        '<media-video-layout></media-video-layout>' +
+        '</media-player>';
     }
 
-    function displayAuthor(authorUsername, authorPictureURL){
+    function displayAuthor(authorUsername, authorPictureURL) {
       var elementBlock = document.getElementById('author-block');
       var elementUsername = document.getElementById('author-username');
       var elementImg = document.getElementById('author-img');
-      
+
       elementBlock.style.display = 'none';
 
       elementUsername.innerHTML = authorUsername;
@@ -64,41 +65,41 @@
       }
     }
 
-    function displayText(text){
+    function displayText(text) {
       var element = document.getElementById('message-text');
       element.style.display = 'none';
 
-      if(text){
+      if (text) {
         element.innerHTML = text;
         element.style.display = 'block';
       }
     }
 
-    function displayContent(data){
+    function displayContent(data) {
       var element = document.getElementById('message-block');
 
       element.innerHTML = '';
 
-      if(data.mediaContentType){
-        if(data.mediaContentType.indexOf('image') === 0){
-          element.innerHTML = generateImg(data.media || data.url);
-        }else {
-          element.innerHTML = generateAudioVideo(data.media || data.url);
+      if (data.mediaContentType) {
+        if (data.mediaContentType.indexOf('image') === 0) {
+          element.innerHTML = generateImg(data.media || data.url, data.displayFull);
+        } else {
+          element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull);
         }
       }
     }
 
     var timeout;
     function displayMessage(message) {
-      if(timeout){
+      if (timeout) {
         clearTimeout(timeout);
       }
-      if(message.duration){
+      if (message.duration) {
         timeout = setTimeout(() => {
           displayMessage({})
         }, (message.duration * 1000) + 100);
       }
-      
+
       var elementMessage = document.getElementById('message-block');
       var elementBlock = document.getElementById('author-block');
       var elementText = document.getElementById('message-text');
@@ -107,7 +108,7 @@
       elementText.style.display = 'none';
 
       displayAuthor(message.author, message.authorImage);
-      
+
       var data = JSON.parse(message.content || '{}');
 
       displayText(data.text);
@@ -131,6 +132,12 @@
       socket.on("new-message", function (data) {
         console.debug(data);
         displayMessage(data);
+      });
+
+      socket.on("stop", function (data) {
+        console.debug("Media stopped !");
+        clearTimeout(timeout);
+        displayMessage({});
       });
     });
   </script>

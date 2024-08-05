@@ -1,6 +1,7 @@
 import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { QueueType } from '../../services/prisma/loadPrisma';
 import { getContentInformationsFromUrl } from '../../services/content-utils';
+import { getDisplayMediaFullFromGuildId, getDurationFromGuildId } from '../../services/utils';
 
 export const hideSendCommand = () => ({
   data: new SlashCommandBuilder()
@@ -49,11 +50,18 @@ export const hideSendCommand = () => ({
           text,
           media,
           mediaContentType,
-          mediaDuration: mediaDuration ? Math.ceil(mediaDuration) : undefined,
+          mediaDuration: await getDurationFromGuildId(
+            mediaDuration ? Math.ceil(mediaDuration) : undefined,
+            interaction.guildId!,
+          ),
+          displayFull: await getDisplayMediaFullFromGuildId(interaction.guildId!),
         }),
         type: QueueType.MESSAGE,
         discordGuildId: interaction.guildId!,
-        duration: mediaDuration ? Math.ceil(mediaDuration) : env.DEFAULT_DURATION,
+        duration: await getDurationFromGuildId(
+          mediaDuration ? Math.ceil(mediaDuration) : undefined,
+          interaction.guildId!,
+        ),
       },
     });
 

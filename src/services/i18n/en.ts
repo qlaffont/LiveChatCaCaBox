@@ -4,6 +4,7 @@ export const enLang = {
   serverStarted: 'Server started !',
   success: 'Success !',
   error: 'Error !',
+  notAllowed: 'Not allowed !',
 
   discordCommands: 'Load Discord commands',
   discordCommandLoaded: 'Command loaded : /{{command}} ✅',
@@ -57,4 +58,26 @@ export const enLang = {
   hideTalkCommandOptionVoice: 'voice',
   hideTalkCommandOptionVoiceDescription: 'Text to say',
   hideTalkCommandAnswer: 'Content received ! Will be played soon !',
+
+  setDefaultTimeCommand: 'config-defaulttime',
+  setDefaultTimeCommandDescription: 'Set default time for display (Default : 5 seconds)  (In seconds)',
+  setDefaultTimeCommandOptionText: 'number',
+  setDefaultTimeCommandOptionTextDescription: 'Number of seconds',
+  setDefaultTimeCommandAnswer: 'Default time set !',
+
+  setMaxTimeCommand: 'config-maxtime',
+  setMaxTimeCommandDescription: 'Set max time for display (In seconds)',
+  setMaxTimeCommandOptionText: 'number',
+  setMaxTimeCommandOptionTextDescription: 'Number of seconds',
+  setMaxTimeCommandAnswer: 'Max time set !',
+
+  setDisplayMediaFullCommand: 'config-displayfull',
+  setDisplayMediaFullCommandDescription: 'Set if media should be displayed in full screen',
+  setDisplayMediaFullCommandOptionText: 'boolean',
+  setDisplayMediaFullCommandOptionTextDescription: 'True  / False',
+  setDisplayMediaFullCommandAnswer: 'Display full set !',
+
+  stopCommand: 'stop',
+  stopCommandDescription: 'Remove content displayed',
+  stopCommandAnswer: 'Content removed',
 };

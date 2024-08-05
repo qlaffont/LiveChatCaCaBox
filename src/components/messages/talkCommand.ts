@@ -2,6 +2,7 @@ import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.j
 import { QueueType } from '../../services/prisma/loadPrisma';
 import { getContentInformationsFromUrl } from '../../services/content-utils';
 import { deleteGtts, promisedGtts, readGttsAsStream } from '../../services/gtts';
+import { getDurationFromGuildId } from '../../services/utils';
 
 export const talkCommand = () => ({
   data: new SlashCommandBuilder()
@@ -53,7 +54,10 @@ export const talkCommand = () => ({
         }),
         type: QueueType.VOCAL,
         discordGuildId: interaction.guildId!,
-        duration: additionalContent.mediaDuration ? Math.ceil(additionalContent.mediaDuration) : env.DEFAULT_DURATION,
+        duration: await getDurationFromGuildId(
+          additionalContent.mediaDuration ? Math.ceil(additionalContent.mediaDuration) : undefined,
+          interaction.guildId!,
+        ),
         author: interaction.user.username,
         authorImage: interaction.user.avatarURL(),
       },
