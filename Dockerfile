@@ -11,9 +11,6 @@ ENV DATABASE_URL="file:/usr/src/app/sqlite.db"
 # Add maintainer label
 LABEL maintainer="Quentin Laffont <contact@qlaffont.com>"
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
-
 RUN npm install pnpm -g
 
 # Copy package.json and package-lock.json to the working directory
@@ -32,4 +29,4 @@ RUN pnpm generate
 EXPOSE $PORT
 
 # Command to run the app
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "run", "dev"]
