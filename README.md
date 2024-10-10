@@ -30,6 +30,11 @@ Une version hébergée existe sur la plateforme [LeStudio](https://lestudio.qlaf
 - `/dire` -> Demandez à un bot de dire quelque chose
 - `/cire` -> Demandez à un bot de dire quelque chose (mais caché 😈)
 
+### Customisation
+
+Si vous souhaitez modifier le rendu du bot, il vous suffit de modifier le fichier dans `src/components/client/client.html` !
+(Attention si vous êtes sur docker il faut rebuild l'application !)
+
 ### Installation
 
 #### 1 - Informations Discord
@@ -42,20 +47,7 @@ Une version hébergée existe sur la plateforme [LeStudio](https://lestudio.qlaf
 
 #### 2 - Installation
 
-Vous pouvez installer cette application par trois manières.
-
-Si vous avez [Docker](https://www.docker.com/get-started/) e:
-
-```bash
-docker run -p 3000:3000 qlaffont/livechatccb \
--e DISCORD_TOKEN='DISCORD-TOKEN-TO-REPLACE' \ # <-- Remplacer par le token Discord
--e DISCORD_CLIENT_ID='DISCORD-ID-TO-REPLACE' \ # <--Remplacer par l'ID de l'application Discord
--e DEFAULT_DURATION='5' \ # <-- Durée par défaut si le contenu n'est pas vidéo ou audio
--e HIDE_COMMANDS_DISABLED='false' \ # <-- Si vous souhaitez désactiver les commandes masquées, vous pouvez modifier la valeur de 'false' à 'true'
--e API_URL='API-URL-TO-REPLACE' # <-- Remplacer par l'adresse où l'utilisateur se connectera (Ex: https://livechat.domainname.com)
-```
-
-OU
+Vous pouvez installer cette application par deux manières.
 
 Si vous avez [Docker](https://www.docker.com/get-started/) et vous voulez la construire vous:
 
@@ -74,7 +66,7 @@ docker run -p 3000:3000 qlaffont-livechatccb \
 
 OU
 
-Vous pouvez l'installer manuellement:
+Vous voulez l'installer manuellement:
 
 **Exigences**
 - [Node 20](https://nodejs.org/en)
@@ -123,6 +115,11 @@ An hosted version exist on [LeStudio](https://lestudio.qlaffont.com) !
 - `/talk` -> Ask a bot to say something
 - `/htalk` -> Ask a bot to say something (but hided 😈)
 
+### Customisation
+
+If you want to change the rendering of the bot, simply modify the file in `src/components/client/client.html` !
+(Be careful if you run on Docker you have to rebuild the application !)
+
 ### Installation
 
 #### 1 - Discord Informations
@@ -135,21 +132,7 @@ An hosted version exist on [LeStudio](https://lestudio.qlaffont.com) !
 
 #### 2 - Installation
 
-You can install this application by three way.
-
-If you have [Docker](https://www.docker.com/get-started/) : 
-
-```bash
-docker run -p 3000:3000 qlaffont/livechatccb \
--e DISCORD_TOKEN='DISCORD-TOKEN-TO-REPLACE' \ # <--Replace with Discord Token
--e DISCORD_CLIENT_ID='DISCORD-ID-TO-REPLACE' \ # <--Replace with Discord Application Id
--e DEFAULT_DURATION='5' \ # <-- Default duration if content is not video or audio
--e HIDE_COMMANDS_DISABLED='false' \ # <-- If you want to disable hided commands, you can change the value from 'false' to 'true'
--e API_URL='API-URL-TO-REPLACE' \ # <--Replace with the endpoint where user will connect (Ex: https://livechat.domainname.com)
--e I18N='en'
-```
-
-OR
+You can install this application by two way.
 
 If you have [Docker](https://www.docker.com/get-started/) and want to build it: 
 
