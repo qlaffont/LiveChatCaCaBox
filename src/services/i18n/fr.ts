@@ -63,13 +63,14 @@ export const frLang: typeof enLang = {
 
   setDefaultTimeCommand: 'config-defaut',
   setDefaultTimeCommandDescription:
-    "Définir le temps par défaut pour l'affichage (Par défaut : 5 seconds) (En secondes)",
+    "Définir le temps par défaut pour l'affichage (Par défaut : 5 seconds) (En secondes) | 0 remet la valeur par défaut",
   setDefaultTimeCommandOptionText: 'nombre',
   setDefaultTimeCommandOptionTextDescription: 'Nombre de seconds',
   setDefaultTimeCommandAnswer: 'Le temps par défaut défini !',
 
   setMaxTimeCommand: 'config-max',
-  setMaxTimeCommandDescription: "Définir le temps maximal pour l'affichage (En secondes)",
+  setMaxTimeCommandDescription:
+    "Définir le temps maximal pour l'affichage (En secondes) | 0 remet la valeur par défaut",
   setMaxTimeCommandOptionText: 'nombre',
   setMaxTimeCommandOptionTextDescription: 'Nombre de seconds',
   setMaxTimeCommandAnswer: 'Temps maximum défini !',

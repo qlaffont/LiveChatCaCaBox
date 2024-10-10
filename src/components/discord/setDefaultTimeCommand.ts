@@ -33,10 +33,10 @@ export const setDefaultTimeCommand = () => ({
       },
       create: {
         id: interaction.guildId!,
-        defaultMediaTime: number,
+        defaultMediaTime: number || null,
       },
       update: {
-        defaultMediaTime: number,
+        defaultMediaTime: number || null,
       },
     });
 

@@ -60,13 +60,14 @@ export const enLang = {
   hideTalkCommandAnswer: 'Content received ! Will be played soon !',
 
   setDefaultTimeCommand: 'config-defaulttime',
-  setDefaultTimeCommandDescription: 'Set default time for display (Default : 5 seconds)  (In seconds)',
+  setDefaultTimeCommandDescription:
+    'Set default time for display (Default : 5 seconds)  (In seconds) | 0 will reset value to default',
   setDefaultTimeCommandOptionText: 'number',
   setDefaultTimeCommandOptionTextDescription: 'Number of seconds',
   setDefaultTimeCommandAnswer: 'Default time set !',
 
   setMaxTimeCommand: 'config-maxtime',
-  setMaxTimeCommandDescription: 'Set max time for display (In seconds)',
+  setMaxTimeCommandDescription: 'Set max time for display (In seconds) | 0 will reset value to default',
   setMaxTimeCommandOptionText: 'number',
   setMaxTimeCommandOptionTextDescription: 'Number of seconds',
   setMaxTimeCommandAnswer: 'Max time set !',

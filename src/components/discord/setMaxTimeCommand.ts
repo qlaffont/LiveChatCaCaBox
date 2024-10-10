@@ -33,10 +33,10 @@ export const setMaxTimeCommand = () => ({
       },
       create: {
         id: interaction.guildId!,
-        maxMediaTime: number,
+        maxMediaTime: number || null,
       },
       update: {
-        maxMediaTime: number,
+        maxMediaTime: number || null,
       },
     });
 
