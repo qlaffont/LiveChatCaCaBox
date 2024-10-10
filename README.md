@@ -12,6 +12,10 @@ Cette application est inspirée d'un projet (LiveChat) qui a été développé p
 
 L'objectif de cette application est d'envoyer du contenu sur une page Web qui est utilisée dans un logiciel de diffusion comme OBS, XSplit, etc.
 
+Une version hébergée existe sur la plateforme [LeStudio](https://lestudio.qlaffont.com) !
+
+**Aucun support ne sera traitée si vous ne maitrisez pas Docker OU JavaScript.**
+
 ### Caractéristiques
 
 - Envoyez tout type de contenu (audio, vidéo, image, texte) sur le stream
@@ -100,6 +104,10 @@ INFO : [DISCORD] Pour inviter le bot : https://discord.com/oauth2/authorize?clie
 This application is inspired from a project (LiveChat) who have been developed by streamer group called [Cacabox](https://www.youtube.com/channel/UC6izVPg2AiK83K-rqS6AgmA).
 
 The objective of this application is to send content on a webpage who is used in a broadcast sofware like OBS, XSplit, etc.
+
+An hosted version exist on [LeStudio](https://lestudio.qlaffont.com) !
+
+**No support will be answered if you don't know Docker OR JavaScript.**
 
 ### Features
 
