@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
   <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
-  <script src="https://cdn.vidstack.io/player" type="module"></script>
+  <script src="https://cdn.vidstack.io/player.core" type="module"></script>
 </head>
 
 <body>
@@ -42,7 +42,7 @@
     }
 
     function generateAudioVideo(src, displayFull) {
-      return '<media-player id="message-player" ' + (displayFull ? "class='aspect-auto w-[100vw] h-[100vh]'" : '') + ' src="' + src + '" autoplay controls>' +
+      return '<media-player id="message-player" ' + (displayFull ? "class='aspect-auto w-[100vw] h-[100vh]'" : '') + ' src="' + src + '" autoplay>' +
         '<media-provider></media-provider>' +
         '<media-audio-layout></media-audio-layout>' +
         '<media-video-layout></media-video-layout>' +
