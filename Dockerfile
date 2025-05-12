@@ -2,9 +2,7 @@ FROM node:20-alpine
 
 # Install ffmpeg
 RUN apk update
-RUN apk add ffmpeg python3 alpine-sdk
-
-RUN pip install setuptools
+RUN apk add ffmpeg python3 alpine-sdk  python3-setuptools
 
 # Set environment variables for configuration
 ENV PORT=3000
