@@ -4,6 +4,8 @@ FROM node:20-alpine
 RUN apk update
 RUN apk add ffmpeg python3 alpine-sdk
 
+RUN pip install setuptools
+
 # Set environment variables for configuration
 ENV PORT=3000
 ENV DATABASE_URL="file:/usr/src/app/sqlite.db"
