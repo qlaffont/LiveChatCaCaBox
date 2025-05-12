@@ -3,8 +3,7 @@ FROM node:20-alpine
 # Install ffmpeg
 RUN apk update
 RUN apk add ffmpeg alpine-sdk
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
+RUN apk add --update --no-cache python3 py3-pip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
 # Set environment variables for configuration
