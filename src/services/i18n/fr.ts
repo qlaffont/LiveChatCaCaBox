@@ -63,7 +63,7 @@ export const frLang: typeof enLang = {
 
   setDefaultTimeCommand: 'config-defaut',
   setDefaultTimeCommandDescription:
-    "Définir le temps par défaut pour l'affichage (Par défaut : 5 seconds) (En secondes) | 0 remet la valeur par défaut",
+    "Définir le temps par défaut pour l'affichage (Par défaut : 5 seconds) (En secondes)",
   setDefaultTimeCommandOptionText: 'nombre',
   setDefaultTimeCommandOptionTextDescription: 'Nombre de seconds',
   setDefaultTimeCommandAnswer: 'Le temps par défaut défini !',

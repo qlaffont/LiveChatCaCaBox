@@ -37,7 +37,7 @@ export const sendCommand = () => ({
       mediaContentType = additionalContent.contentType;
     }
 
-    if ((mediaContentType === undefined || mediaDuration === null) && additionalContent?.mediaDuration) {
+    if ((mediaDuration === undefined || mediaDuration === null) && additionalContent?.mediaDuration) {
       mediaDuration = additionalContent.mediaDuration;
     }
 

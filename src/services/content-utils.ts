@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import { getVideoDurationInSeconds } from 'get-video-duration';
 import { fileTypeFromBuffer } from 'file-type';
 import mime from 'mime-types';
+import ytdl from '@distube/ytdl-core';
 
 function getFileTypeWithRegex(url) {
   const regex = /(?:\.([^.]+))?$/; // Regular expression to capture file extension
@@ -45,6 +46,13 @@ export const getContentInformationsFromUrl = async (url: string) => {
   try {
     mediaDuration = await getVideoDurationInSeconds(url, 'ffprobe');
   } catch (error) {}
+
+  //if it is a youtube video, get the duration from the url
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const info = await ytdl.getInfo(url);
+    mediaDuration = info.videoDetails.lengthSeconds;
+    contentType = 'video/mp4';
+  }
 
   return { contentType, mediaDuration };
 };
