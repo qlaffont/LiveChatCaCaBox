@@ -27,6 +27,7 @@ export const sendCommand = () => ({
     const media = interaction.options.get(rosetty.t('sendCommandOptionMedia')!)?.attachment?.proxyURL;
     let mediaContentType = interaction.options.get(rosetty.t('sendCommandOptionMedia')!)?.attachment?.contentType;
     let mediaDuration = interaction.options.get(rosetty.t('sendCommandOptionMedia')!)?.attachment?.duration;
+    let mediaIsShort = false;
 
     let additionalContent;
     if ((!mediaContentType || !mediaDuration) && (media || url)) {
@@ -41,6 +42,10 @@ export const sendCommand = () => ({
       mediaDuration = additionalContent.mediaDuration;
     }
 
+    if (additionalContent?.mediaIsShort) {
+      mediaIsShort = additionalContent.mediaIsShort || false;
+    }
+
     await prisma.queue.create({
       data: {
         content: JSON.stringify({
@@ -53,6 +58,7 @@ export const sendCommand = () => ({
             interaction.guildId!,
           ),
           displayFull: await getDisplayMediaFullFromGuildId(interaction.guildId!),
+          mediaIsShort,
         }),
         type: QueueType.MESSAGE,
         author: interaction.user.username,

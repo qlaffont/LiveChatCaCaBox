@@ -14,7 +14,7 @@ function getFileTypeWithRegex(url) {
 export const getContentInformationsFromUrl = async (url: string) => {
   let contentType;
   let mediaDuration;
-
+  let mediaIsShort;
   // First try to get it with URL
   try {
     const fileExt = getFileTypeWithRegex(url);
@@ -51,8 +51,9 @@ export const getContentInformationsFromUrl = async (url: string) => {
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     const info = await ytdl.getInfo(url);
     mediaDuration = info.videoDetails.lengthSeconds;
+    mediaIsShort = info.videoDetails.isCrawlable;
     contentType = 'video/mp4';
   }
 
-  return { contentType, mediaDuration };
+  return { contentType, mediaDuration, mediaIsShort };
 };

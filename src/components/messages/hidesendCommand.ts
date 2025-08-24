@@ -29,18 +29,31 @@ export const hideSendCommand = () => ({
     const media = interaction.options.get(rosetty.t('hideSendCommandOptionMedia')!)?.attachment?.proxyURL;
     let mediaContentType = interaction.options.get(rosetty.t('sendCommandOptionMedia')!)?.attachment?.contentType;
     let mediaDuration = interaction.options.get(rosetty.t('sendCommandOptionMedia')!)?.attachment?.duration;
+    let mediaIsShort = false;
 
     let additionalContent;
     if ((!mediaContentType || !mediaDuration) && (media || url)) {
       additionalContent = await getContentInformationsFromUrl((media || url) as string);
     }
 
-    if (mediaContentType === null && additionalContent?.contentType) {
+    if ((mediaContentType === undefined || mediaContentType === null) && additionalContent?.contentType) {
       mediaContentType = additionalContent.contentType;
     }
 
-    if (mediaDuration === null && additionalContent?.mediaDuration) {
+    if (mediaContentType?.startsWith('video/')) {
+      const height = interaction.options.get(rosetty.t('sendCommandOptionMedia')!)?.attachment?.height;
+      const width = interaction.options.get(rosetty.t('sendCommandOptionMedia')!)?.attachment?.width;
+      if (height && width) {
+        mediaIsShort = height > width;
+      }
+    }
+
+    if ((mediaDuration === undefined || mediaDuration === null) && additionalContent?.mediaDuration) {
       mediaDuration = additionalContent.mediaDuration;
+    }
+
+    if (additionalContent?.mediaIsShort) {
+      mediaIsShort = additionalContent.mediaIsShort || false;
     }
 
     await prisma.queue.create({
@@ -55,6 +68,7 @@ export const hideSendCommand = () => ({
             interaction.guildId!,
           ),
           displayFull: await getDisplayMediaFullFromGuildId(interaction.guildId!),
+          mediaIsShort,
         }),
         type: QueueType.MESSAGE,
         discordGuildId: interaction.guildId!,

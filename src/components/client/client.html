@@ -8,7 +8,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
   <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
-  <script src="https://cdn.vidstack.io/player@1.11.30" type="module"></script>
+  <script src="https://cdn.vidstack.io/player@1.12.13" type="module"></script>
+  <style>
+    media-player.is-short {
+      aspect-ratio: 9 / 16;
+    }
+  </style>
 </head>
 
 <body>
@@ -41,8 +46,8 @@
       return '<img id="message-img" ' + (displayFull ? 'class="aspect-auto w-full h-full max-w-[100vw] max-h-[100vh]"' : '') + ' src="' + src + '" />';
     }
 
-    function generateAudioVideo(src, displayFull) {
-      return '<media-player id="message-player" ' + (displayFull ? "class='aspect-auto w-[100vw] h-[100vh]'" : '') + ' src="' + src + '" autoplay>' +
+    function generateAudioVideo(src, displayFull, mediaIsShort) {
+      return '<media-player id="message-player" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' src="' + src + '" autoplay>' +
         '<media-provider></media-provider>' +
         '<media-audio-layout></media-audio-layout>' +
         '<media-video-layout></media-video-layout>' +
@@ -84,13 +89,14 @@
         if (data.mediaContentType.indexOf('image') === 0) {
           element.innerHTML = generateImg(data.media || data.url, data.displayFull);
         } else {
-          element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull);
+          element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull, data.mediaIsShort);
         }
       }
     }
 
     var timeout;
     function displayMessage(message) {
+      console.debug("New message !", message);
       if (timeout) {
         clearTimeout(timeout);
       }
