@@ -1,3 +1,4 @@
+import fs from 'fs';
 import fetch from 'node-fetch';
 import { getVideoDurationInSeconds } from 'get-video-duration';
 import { fileTypeFromBuffer } from 'file-type';
@@ -49,7 +50,13 @@ export const getContentInformationsFromUrl = async (url: string) => {
 
   //if it is a youtube video, get the duration from the url
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    const info = await ytdl.getInfo(url);
+    let agent;
+
+    //if file exist on root of app, use it
+    if (fs.existsSync(env.YTDL_COOKIE_PATH)) {
+      agent = ytdl.createAgent(JSON.parse(fs.readFileSync(env.YTDL_COOKIE_PATH, 'utf8')));
+    }
+    const info = await ytdl.getInfo(url, { agent });
     mediaDuration = info.videoDetails.lengthSeconds;
     mediaIsShort = info.videoDetails.isCrawlable;
     contentType = 'video/mp4';

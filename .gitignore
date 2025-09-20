@@ -76,3 +76,5 @@ logs
 docs
 data
 sqlite.db*
+
+ytdl.json
