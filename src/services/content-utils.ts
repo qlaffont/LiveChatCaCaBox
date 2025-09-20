@@ -3,7 +3,8 @@ import fetch from 'node-fetch';
 import { getVideoDurationInSeconds } from 'get-video-duration';
 import { fileTypeFromBuffer } from 'file-type';
 import mime from 'mime-types';
-import ytdl from '@distube/ytdl-core';
+import { Innertube } from 'youtubei.js';
+import { env } from './env';
 
 function getFileTypeWithRegex(url) {
   const regex = /(?:\.([^.]+))?$/; // Regular expression to capture file extension
@@ -50,16 +51,30 @@ export const getContentInformationsFromUrl = async (url: string) => {
 
   //if it is a youtube video, get the duration from the url
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    let agent;
-
-    //if file exist on root of app, use it
-    if (fs.existsSync(env.YTDL_COOKIE_PATH)) {
-      agent = ytdl.createAgent(JSON.parse(fs.readFileSync(env.YTDL_COOKIE_PATH, 'utf8')));
+    try {
+      // Create Innertube instance with optional cookie data
+      const options: any = {};
+      
+      //if file exist on root of app, use it
+      if (fs.existsSync(env.YTDL_COOKIE_PATH)) {
+        const cookieData = JSON.parse(fs.readFileSync(env.YTDL_COOKIE_PATH, 'utf8'));
+        options.cookie = cookieData;
+      }
+      
+      const innertube = await Innertube.create(options);
+      const info = await innertube.getInfo(url);
+      
+      // Get duration from basic_info
+      if (info.basic_info?.duration) {
+        mediaDuration = info.basic_info.duration;
+      }
+      
+      // Check if it's crawlable (similar to isCrawlable)
+      mediaIsShort = info.basic_info?.is_crawlable ?? true;
+      contentType = 'video/mp4';
+    } catch (error) {
+      console.error('Error getting YouTube video info:', error);
     }
-    const info = await ytdl.getInfo(url, { agent });
-    mediaDuration = info.videoDetails.lengthSeconds;
-    mediaIsShort = info.videoDetails.isCrawlable;
-    contentType = 'video/mp4';
   }
 
   return { contentType, mediaDuration, mediaIsShort };

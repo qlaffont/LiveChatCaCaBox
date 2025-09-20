@@ -12,9 +12,6 @@
     "migration:up": "prisma migrate deploy",
     "migration:make": "prisma migrate dev"
   },
-  "lint-staged": {
-    "*.ts": "eslint --fix"
-  },
   "author": "qlaffont",
   "license": "ISC",
   "devDependencies": {
@@ -39,7 +36,6 @@
     "typescript": "5.3.3"
   },
   "dependencies": {
-    "@distube/ytdl-core": "^4.16.12",
     "@gquittet/graceful-server": "^4.0.8",
     "@prisma/client": "^5.10.2",
     "@socket.io/postgres-emitter": "^0.1.0",
@@ -63,6 +59,7 @@
     "tslib": "^2.6.2",
     "unify-errors": "^1.2.202",
     "unify-fastify": "^1.4.24",
+    "youtubei.js": "^15.1.1",
     "zlib-sync": "^0.1.9",
     "zod": "^3.22.4",
     "zod-validation-error": "^3.0.1"
