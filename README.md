@@ -62,7 +62,6 @@ docker run -p 3000:3000 qlaffont-livechatccb \
 -e DEFAULT_DURATION='5' \ # <-- Durée par défaut si le contenu n'est pas vidéo ou audio
 -e HIDE_COMMANDS_DISABLED='false' \ # <-- Si vous souhaitez désactiver les commandes masquées, vous pouvez modifier la valeur de 'false' à 'true'
 -e API_URL='API-URL-TO-REPLACE' # <-- Remplacer par l'adresse où l'utilisateur se connectera (Ex: https://livechat.domainname.com)
--e YTDL_COOKIE_PATH='YTDL-COOKIE-PATH-TO-REPLACE' # <-- Remplacer par le chemin du fichier cookies.json (voir https://github.com/distubejs/ytdl-core#cookies-support)
 ```
 
 OU
@@ -148,7 +147,6 @@ docker run -p 3000:3000 qlaffont-livechatccb \
 -e DEFAULT_DURATION='5' \ # <-- Default duration if content is not video or audio
 -e HIDE_COMMANDS_DISABLED='false' \ # <-- If you want to disable hided commands, you can change the value from 'false' to 'true'
 -e API_URL='API-URL-TO-REPLACE' \ # <--Replace with the endpoint where user will connect (Ex: https://livechat.domainname.com)
--e YTDL_COOKIE_PATH='YTDL-COOKIE-PATH-TO-REPLACE' # <-- Replace with the path of the cookies.json file (see https://github.com/distubejs/ytdl-core#cookies-support)
 -e I18N='en'
 ```
 

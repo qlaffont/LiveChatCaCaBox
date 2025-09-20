@@ -27,8 +27,6 @@ export const env = createEnv({
       .string()
       .default('5')
       .transform((s) => parseInt(s)),
-
-    YTDL_COOKIE_PATH: z.string(),
   },
   runtimeEnv: process.env,
 });
