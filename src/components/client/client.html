@@ -13,6 +13,27 @@
     media-player.is-short {
       aspect-ratio: 9 / 16;
     }
+
+    #message-text {
+      text-shadow: #000000 0px 0 4px;
+      font-weight: 800;
+      color: white;
+      -webkit-text-stroke: 1px rgb(0 0 0 / 50%);
+
+      animation: grow-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation-fill-mode: forwards;
+    }
+    
+    @keyframes grow-in {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 
@@ -31,7 +52,7 @@
 
   <div class="absolute w-screen h-screen flex items-end justify-center top-0 left-0 z-20 px-5 pb-5">
     <div>
-      <p id="message-text" class="text-white text-5xl font-medium text-center" style="text-shadow:white 1px 0 10px;">
+      <p id="message-text" class="text-white text-5xl font-medium text-center">
       </p>
     </div>
   </div>
