@@ -9,7 +9,6 @@ const { execSync } = require('child_process');
 
 // Get the Windows Startup folder path
 function getStartupFolder() {
-  const username = process.env.USERNAME || process.env.USER;
   const startupPath = path.join(
     process.env.APPDATA || '',
     'Microsoft',
@@ -24,6 +23,7 @@ function getStartupFolder() {
 // Create a VBS script to run the batch file without showing cmd window initially
 // But the batch file itself will show the console for logs
 function createVbsLauncher(batFilePath, vbsFilePath) {
+  // Window style: 1 = Show window in normal state (visible console window)
   const vbsContent = `Set WshShell = CreateObject("WScript.Shell")
 WshShell.Run chr(34) & "${batFilePath.replace(/\\/g, '\\\\')}" & Chr(34), 1
 Set WshShell = Nothing`;
@@ -88,7 +88,8 @@ $Shortcut.Save()
     fs.writeFileSync(psScriptPath, psScript, 'utf8');
     
     try {
-      execSync(`powershell -ExecutionPolicy Bypass -File "${psScriptPath}"`, {
+      // Use RemoteSigned to allow locally created scripts while maintaining security
+      execSync(`powershell -ExecutionPolicy RemoteSigned -File "${psScriptPath}"`, {
         stdio: 'inherit'
       });
       fs.unlinkSync(psScriptPath); // Clean up the PowerShell script
