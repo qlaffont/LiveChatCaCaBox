@@ -13,7 +13,7 @@ REM Change to the directory where the script is located
 cd /d "%~dp0"
 
 REM Check if node is available
-where node >nul 2>nul
+where /Q node
 if %ERRORLEVEL% NEQ 0 (
     echo ERROR: Node.js is not installed or not in PATH
     echo Please install Node.js from https://nodejs.org/
@@ -22,7 +22,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 REM Check if pnpm is available
-where pnpm >nul 2>nul
+where /Q pnpm
 if %ERRORLEVEL% NEQ 0 (
     echo ERROR: pnpm is not installed or not in PATH
     echo Please install pnpm: npm install -g pnpm

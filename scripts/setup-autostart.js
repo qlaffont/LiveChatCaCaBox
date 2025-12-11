@@ -7,6 +7,11 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// Utility function to escape Windows paths for VBS/PowerShell scripts
+function escapeWindowsPath(filePath) {
+  return filePath.replace(/\\/g, '\\\\');
+}
+
 // Get the Windows Startup folder path
 function getStartupFolder() {
   const startupPath = path.join(
@@ -25,7 +30,7 @@ function getStartupFolder() {
 function createVbsLauncher(batFilePath, vbsFilePath) {
   // Window style: 1 = Show window in normal state (visible console window)
   const vbsContent = `Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run chr(34) & "${batFilePath.replace(/\\/g, '\\\\')}" & Chr(34), 1
+WshShell.Run chr(34) & "${escapeWindowsPath(batFilePath)}" & Chr(34), 1
 Set WshShell = Nothing`;
   
   fs.writeFileSync(vbsFilePath, vbsContent, 'utf8');
@@ -76,15 +81,21 @@ function enableAutoStart() {
     // Create a PowerShell script to create the shortcut
     const psScript = `
 $WshShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut("${shortcutPath.replace(/\\/g, '\\\\')}")
-$Shortcut.TargetPath = "${vbsFilePath.replace(/\\/g, '\\\\')}"
-$Shortcut.WorkingDirectory = "${projectRoot.replace(/\\/g, '\\\\')}"
+$Shortcut = $WshShell.CreateShortcut("${escapeWindowsPath(shortcutPath)}")
+$Shortcut.TargetPath = "${escapeWindowsPath(vbsFilePath)}"
+$Shortcut.WorkingDirectory = "${escapeWindowsPath(projectRoot)}"
 $Shortcut.Description = "LiveChat CaCaBox Bot Auto-Start"
 $Shortcut.Save()
 `;
 
-    // Execute PowerShell script
+    // Execute PowerShell script - create in project root for validation
     const psScriptPath = path.join(projectRoot, 'create-shortcut.ps1');
+    
+    // Validate that psScriptPath is in the expected location
+    if (!psScriptPath.startsWith(projectRoot)) {
+      throw new Error('Security check failed: PowerShell script path is outside project directory');
+    }
+    
     fs.writeFileSync(psScriptPath, psScript, 'utf8');
     
     try {
