@@ -90,6 +90,24 @@ INFO : [DISCORD] En ligne ! Connecté en tant que xxxx
 INFO : [DISCORD] Pour inviter le bot : https://discord.com/oauth2/authorize?client_id=xxxx&scope=bot
 ```
 
+### Démarrage automatique (Windows 11)
+
+Pour les utilisateurs Windows 11 qui souhaitent que le bot démarre automatiquement au démarrage du PC :
+
+#### Activer le démarrage automatique :
+```bash
+pnpm autostart:enable
+```
+
+#### Désactiver le démarrage automatique :
+```bash
+pnpm autostart:disable
+```
+
+Lorsque le démarrage automatique est activé, une fenêtre de console s'ouvrira automatiquement au démarrage de Windows, affichant les journaux du bot en temps réel.
+
+Pour plus d'informations détaillées, consultez le fichier [AUTOSTART.md](./AUTOSTART.md).
+
 
 ## ENGLISH
 
@@ -175,3 +193,21 @@ Exemple :
 INFO : [DISCORD] Ready ! Logged in as xxxx
 INFO : [DISCORD] To invite bot : https://discord.com/oauth2/authorize?client_id=xxxx&scope=bot
 ```
+
+### Auto-Start (Windows 11)
+
+For Windows 11 users who want the bot to start automatically when their PC boots:
+
+#### Enable auto-start:
+```bash
+pnpm autostart:enable
+```
+
+#### Disable auto-start:
+```bash
+pnpm autostart:disable
+```
+
+When auto-start is enabled, a console window will automatically open on Windows startup, displaying the bot logs in real-time.
+
+For detailed information, see [AUTOSTART.md](./AUTOSTART.md).

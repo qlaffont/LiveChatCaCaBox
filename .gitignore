@@ -78,3 +78,7 @@ data
 sqlite.db*
 
 ytdl.json
+
+# Auto-start generated files
+launch-bot.vbs
+create-shortcut.ps1
