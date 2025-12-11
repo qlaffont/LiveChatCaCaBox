@@ -10,7 +10,9 @@
     "prepare": "husky install",
     "generate": "prisma generate",
     "migration:up": "prisma migrate deploy",
-    "migration:make": "prisma migrate dev"
+    "migration:make": "prisma migrate dev",
+    "autostart:enable": "node scripts/setup-autostart.js enable",
+    "autostart:disable": "node scripts/setup-autostart.js disable"
   },
   "author": "qlaffont",
   "license": "ISC",
