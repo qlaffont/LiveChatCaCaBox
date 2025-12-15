@@ -132,7 +132,7 @@ export const scanMediaFolder = async (folderPath: string): Promise<MediaItemData
       if (fileType === 'image') {
         thumbnailUrl = await generateImageThumbnail(filePath);
       } else {
-        thumbnailUrl = await generateVideoThumbnail(filePath);
+        thumbnailUrl = await generateVideoThumbnail();
       }
 
       // Get duration for videos

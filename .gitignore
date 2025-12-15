@@ -77,6 +77,10 @@ docs
 data
 sqlite.db*
 
+# Test database
+test.db*
+.vitest
+
 ytdl.json
 
 # Auto-start generated files
