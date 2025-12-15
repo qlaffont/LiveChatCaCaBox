@@ -2,9 +2,8 @@ name: ci
 
 on:
   push:
-    branches:
-      - 'master'
-        workflow_dispatch:
+    branches: ["master"]
+  workflow_dispatch:
 
 jobs:
   docker:
@@ -27,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-      tags: superknacky/livechat:latest
+          tags: superknacky/livechat:latest
