@@ -40,10 +40,9 @@ export const generateImageThumbnail = async (filePath: string): Promise<string> 
 
 /**
  * Generate a placeholder thumbnail for video files
- * @param filePath Full path to the video file
  * @returns Base64 encoded SVG placeholder
  */
-export const generateVideoThumbnail = async (filePath: string): Promise<string> => {
+export const generateVideoThumbnail = async (): Promise<string> => {
   // For MVP, return a placeholder
   // Future: Use ffmpeg to extract frame
   return generatePlaceholderThumbnail('video');
@@ -57,12 +56,12 @@ export const generateVideoThumbnail = async (filePath: string): Promise<string> 
 const generatePlaceholderThumbnail = (type: 'image' | 'video'): string => {
   const icon = type === 'video' ? '▶' : '🖼';
   const color = type === 'video' ? '#3b82f6' : '#10b981';
-  
+
   const svg = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
     <rect width="200" height="200" fill="${color}"/>
     <text x="50%" y="50%" font-size="60" fill="white" text-anchor="middle" dominant-baseline="middle">${icon}</text>
   </svg>`;
-  
+
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 };
 
@@ -84,13 +83,9 @@ const getVideoDuration = async (filePath: string): Promise<number | undefined> =
 /**
  * Scan a folder for media files and generate metadata
  * @param folderPath Absolute path to the folder to scan
- * @param userId User ID who owns this folder
  * @returns Array of media item data
  */
-export const scanMediaFolder = async (
-  folderPath: string,
-  userId: string,
-): Promise<MediaItemData[]> => {
+export const scanMediaFolder = async (folderPath: string): Promise<MediaItemData[]> => {
   const mediaItems: MediaItemData[] = [];
 
   try {
@@ -109,7 +104,7 @@ export const scanMediaFolder = async (
 
     for (const filename of files) {
       const filePath = path.join(folderPath, filename);
-      
+
       // Skip if not a file
       const fileStats = fs.statSync(filePath);
       if (!fileStats.isFile()) {
@@ -118,7 +113,7 @@ export const scanMediaFolder = async (
 
       // Get file extension
       const ext = path.extname(filename).toLowerCase();
-      
+
       // Determine file type
       let fileType: 'image' | 'video' | null = null;
       if (IMAGE_EXTENSIONS.includes(ext)) {

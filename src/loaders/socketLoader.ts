@@ -12,7 +12,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
 
     socket.on('disconnecting', async () => {
       logger.debug(`New disconnection to socketIO :  ${socket.id}`);
-      
+
       // Check if this was an admin user
       let disconnectedUserId: string | null = null;
       for (const [userId, socketId] of connectedUsers.entries()) {
@@ -24,7 +24,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
 
       if (disconnectedUserId) {
         connectedUsers.delete(disconnectedUserId);
-        
+
         // Update user status in database
         await prisma.user.update({
           where: { id: disconnectedUserId },
@@ -39,7 +39,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
         socket.to('admin-room').emit('admin:user-offline', {
           userId: disconnectedUserId,
         });
-        
+
         logger.info(`Admin user ${disconnectedUserId} disconnected`);
       }
     });
@@ -114,7 +114,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
         logger.info(`Scanning folder ${folderPath} for user ${userId}`);
 
         // Scan the folder
-        const mediaItems = await scanMediaFolder(folderPath, userId);
+        const mediaItems = await scanMediaFolder(folderPath);
 
         // Create folder in database
         const folder = await prisma.mediaFolder.create({
@@ -339,7 +339,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
       'admin:send-message',
       async (data: { userId: string; guildId: string; text?: string; url?: string; mediaId?: string }) => {
         try {
-          const { userId, guildId, text, url, mediaId } = data;
+          const { userId, guildId, text, url } = data;
 
           // Get user info
           const user = await prisma.user.findUnique({
@@ -409,10 +409,10 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
         // Import TTS module
         const gtts = await import('../services/gtts');
         const { getContentInformationsFromUrl } = await import('../services/content-utils');
-        
+
         // Generate TTS file (saves to disk temporarily)
         const filePath = await gtts.promisedGtts(text, voice || 'fr');
-        
+
         // Create a public URL for the audio file
         // Note: In a real implementation, we'd need to serve this file
         // For now, we'll just use the file path which won't work remotely
@@ -430,7 +430,9 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
               text,
               media: audioUrl,
               mediaContentType: 'audio/mpeg',
-              mediaDuration: contentInfo.mediaDuration ? Math.ceil(contentInfo.mediaDuration) : await getDurationFromGuildId(undefined, guildId),
+              mediaDuration: contentInfo.mediaDuration
+                ? Math.ceil(contentInfo.mediaDuration)
+                : await getDurationFromGuildId(undefined, guildId),
               displayFull: false,
               mediaIsShort: false,
             }),

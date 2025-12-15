@@ -1,4 +1,3 @@
-import fs from 'fs';
 import fetch from 'node-fetch';
 import { getVideoDurationInSeconds } from 'get-video-duration';
 import { fileTypeFromBuffer } from 'file-type';

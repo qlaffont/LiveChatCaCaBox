@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiveChat CaCaBox - Admin Interface</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Socket.IO Client -->
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  
+  <!-- Vue.js 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  
+  <style>
+    [v-cloak] {
+      display: none;
+    }
+    .media-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .media-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div id="app" v-cloak>
+    <!-- Authentication Screen -->
+    <div v-if="!isAuthenticated" class="flex items-center justify-center min-h-screen">
+      <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 class="text-3xl font-bold text-center mb-6 text-indigo-600">LiveChat CaCaBox</h1>
+        <h2 class="text-xl text-center mb-6 text-gray-700">Admin Interface</h2>
+        
+        <form @submit.prevent="authenticate">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+              Username
+            </label>
+            <input
+              v-model="username"
+              type="text"
+              id="username"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+          
+          <button
+            type="submit"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition"
+            :disabled="isConnecting"
+          >
+            {{ isConnecting ? 'Connecting...' : 'Connect' }}
+          </button>
+        </form>
+        
+        <p v-if="errorMessage" class="mt-4 text-red-500 text-sm text-center">
+          {{ errorMessage }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Interface -->
+    <div v-else class="container mx-auto p-4 pb-20">
+      <!-- Header -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6 flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-bold text-indigo-600">LiveChat CaCaBox Admin</h1>
+          <p class="text-gray-600">Welcome, {{ username }}!</p>
+        </div>
+        <button
+          @click="logout"
+          class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition"
+        >
+          Logout
+        </button>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="bg-white rounded-lg shadow-md mb-6">
+        <div class="flex border-b">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            :class="[
+              'flex-1 py-3 px-4 text-center font-semibold transition',
+              activeTab === tab.id
+                ? 'border-b-2 border-indigo-600 text-indigo-600'
+                : 'text-gray-600 hover:text-indigo-600'
+            ]"
+          >
+            {{ tab.icon }} {{ tab.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <!-- Media Library Tab -->
+        <div v-show="activeTab === 'library'">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">📚 Media Library</h2>
+          
+          <!-- Add Folder Section -->
+          <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h3 class="font-semibold mb-3 text-gray-700">Add Media Folder</h3>
+            <form @submit.prevent="addFolder" class="flex gap-2">
+              <input
+                v-model="folderPath"
+                type="text"
+                placeholder="Enter folder path (e.g., C:\Users\Username\Videos)"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+              <button
+                type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition"
+                :disabled="isScanning"
+              >
+                {{ isScanning ? 'Scanning...' : 'Scan Folder' }}
+              </button>
+            </form>
+            <p v-if="scanMessage" class="mt-2 text-sm" :class="scanMessage.type === 'error' ? 'text-red-600' : 'text-green-600'">
+              {{ scanMessage.text }}
+            </p>
+          </div>
+
+          <!-- Filter Buttons -->
+          <div class="mb-4 flex gap-2">
+            <button
+              @click="mediaFilter = 'all'"
+              :class="[
+                'px-4 py-2 rounded transition',
+                mediaFilter === 'all'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              ]"
+            >
+              All ({{ mediaLibrary.length }})
+            </button>
+            <button
+              @click="mediaFilter = 'image'"
+              :class="[
+                'px-4 py-2 rounded transition',
+                mediaFilter === 'image'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              ]"
+            >
+              Images ({{ filteredMedia.filter(m => m.fileType === 'image').length }})
+            </button>
+            <button
+              @click="mediaFilter = 'video'"
+              :class="[
+                'px-4 py-2 rounded transition',
+                mediaFilter === 'video'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              ]"
+            >
+              Videos ({{ filteredMedia.filter(m => m.fileType === 'video').length }})
+            </button>
+          </div>
+
+          <!-- Media Grid -->
+          <div v-if="filteredMedia.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div
+              v-for="media in filteredMedia"
+              :key="media.id"
+              class="media-card bg-white border border-gray-200 rounded-lg overflow-hidden"
+            >
+              <!-- Thumbnail -->
+              <div class="relative h-48 bg-gray-200">
+                <img
+                  :src="media.thumbnailUrl"
+                  :alt="media.filename"
+                  class="w-full h-full object-cover"
+                />
+                <div class="absolute top-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                  {{ media.fileType === 'video' ? '🎥 Video' : '🖼️ Image' }}
+                </div>
+                <div v-if="media.duration" class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                  {{ formatDuration(media.duration) }}
+                </div>
+              </div>
+              
+              <!-- Info -->
+              <div class="p-3">
+                <p class="font-semibold text-sm text-gray-800 truncate" :title="media.filename">
+                  {{ media.filename }}
+                </p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Owner: {{ media.owner.username }}
+                  <span :class="media.owner.isOnline ? 'text-green-500' : 'text-gray-400'">●</span>
+                </p>
+                <button
+                  @click="playMedia(media)"
+                  class="mt-3 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded transition flex items-center justify-center gap-2"
+                >
+                  <span>▶</span> Play
+                </button>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-12 text-gray-500">
+            <p class="text-lg">No media files found</p>
+            <p class="text-sm mt-2">Add a folder to start sharing media!</p>
+          </div>
+        </div>
+
+        <!-- Send Message Tab -->
+        <div v-show="activeTab === 'message'">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">📤 Send Message</h2>
+          
+          <form @submit.prevent="sendMessage" class="space-y-4">
+            <div>
+              <label class="block text-gray-700 font-semibold mb-2">Text</label>
+              <textarea
+                v-model="messageText"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                rows="4"
+                placeholder="Enter your message..."
+              ></textarea>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-semibold mb-2">URL (Optional)</label>
+              <input
+                v-model="messageUrl"
+                type="url"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-semibold mb-2">Guild ID</label>
+              <input
+                v-model="guildId"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="default"
+              />
+            </div>
+            
+            <button
+              type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded transition"
+            >
+              Send Message
+            </button>
+          </form>
+          
+          <p v-if="messageStatus" class="mt-4 text-center" :class="messageStatus.type === 'error' ? 'text-red-600' : 'text-green-600'">
+            {{ messageStatus.text }}
+          </p>
+        </div>
+
+        <!-- Text-to-Speech Tab -->
+        <div v-show="activeTab === 'tts'">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">🎤 Text-to-Speech</h2>
+          
+          <form @submit.prevent="speak" class="space-y-4">
+            <div>
+              <label class="block text-gray-700 font-semibold mb-2">Text to Speak</label>
+              <textarea
+                v-model="ttsText"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                rows="6"
+                placeholder="Enter text to convert to speech..."
+                required
+              ></textarea>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-semibold mb-2">Guild ID</label>
+              <input
+                v-model="guildId"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="default"
+              />
+            </div>
+            
+            <button
+              type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded transition"
+              :disabled="isSpeaking"
+            >
+              {{ isSpeaking ? 'Generating...' : 'Generate and Play' }}
+            </button>
+          </form>
+          
+          <p v-if="ttsStatus" class="mt-4 text-center" :class="ttsStatus.type === 'error' ? 'text-red-600' : 'text-green-600'">
+            {{ ttsStatus.text }}
+          </p>
+        </div>
+
+        <!-- Connected Users Tab -->
+        <div v-show="activeTab === 'users'">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">👥 Connected Users</h2>
+          
+          <div v-if="onlineUsers.length > 0" class="space-y-2">
+            <div
+              v-for="user in onlineUsers"
+              :key="user.userId"
+              class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+            >
+              <div class="flex items-center gap-3">
+                <span class="text-green-500 text-xl">●</span>
+                <div>
+                  <p class="font-semibold text-gray-800">{{ user.username }}</p>
+                  <p class="text-sm text-gray-500">{{ user.mediaCount || 0 }} media files</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-12 text-gray-500">
+            <p class="text-lg">No other users online</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Stop Button -->
+      <button
+        @click="stopCurrent"
+        class="fixed bottom-6 right-6 bg-red-500 hover:bg-red-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-2xl transition transform hover:scale-110"
+        title="Stop Current Media"
+      >
+        ⏹
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          // Authentication
+          isAuthenticated: false,
+          isConnecting: false,
+          username: '',
+          userId: null,
+          errorMessage: '',
+          
+          // Socket
+          socket: null,
+          
+          // Tabs
+          activeTab: 'library',
+          tabs: [
+            { id: 'library', name: 'Media Library', icon: '📚' },
+            { id: 'message', name: 'Send Message', icon: '📤' },
+            { id: 'tts', name: 'Text-to-Speech', icon: '🎤' },
+            { id: 'users', name: 'Users', icon: '👥' },
+          ],
+          
+          // Media Library
+          mediaLibrary: [],
+          mediaFilter: 'all',
+          folderPath: '',
+          isScanning: false,
+          scanMessage: null,
+          
+          // Send Message
+          messageText: '',
+          messageUrl: '',
+          messageStatus: null,
+          
+          // Text-to-Speech
+          ttsText: '',
+          isSpeaking: false,
+          ttsStatus: null,
+          
+          // Guild ID (shared across features)
+          guildId: 'default',
+          
+          // Online Users
+          onlineUsers: [],
+        };
+      },
+      computed: {
+        filteredMedia() {
+          if (this.mediaFilter === 'all') {
+            return this.mediaLibrary;
+          }
+          return this.mediaLibrary.filter(m => m.fileType === this.mediaFilter);
+        },
+      },
+      methods: {
+        /**
+         * Authenticate and connect to Socket.IO
+         */
+        async authenticate() {
+          if (!this.username.trim()) {
+            this.errorMessage = 'Please enter a username';
+            return;
+          }
+          
+          this.isConnecting = true;
+          this.errorMessage = '';
+          
+          try {
+            // Connect to Socket.IO
+            this.socket = io(window.location.origin);
+            
+            // Wait for connection
+            await new Promise((resolve, reject) => {
+              this.socket.on('connect', resolve);
+              this.socket.on('connect_error', reject);
+              setTimeout(() => reject(new Error('Connection timeout')), 10000);
+            });
+            
+            // Register as admin user
+            this.socket.emit('admin:register', {
+              username: this.username,
+            });
+            
+            // Wait for registration confirmation
+            await new Promise((resolve, reject) => {
+              this.socket.once('admin:registered', (data) => {
+                this.userId = data.userId;
+                resolve();
+              });
+              this.socket.once('admin:error', (data) => {
+                reject(new Error(data.message));
+              });
+              setTimeout(() => reject(new Error('Registration timeout')), 10000);
+            });
+            
+            // Set up event listeners
+            this.setupSocketListeners();
+            
+            // Load media library
+            await this.loadMediaLibrary();
+            
+            this.isAuthenticated = true;
+          } catch (error) {
+            console.error('Authentication error:', error);
+            this.errorMessage = error.message || 'Failed to connect';
+            if (this.socket) {
+              this.socket.disconnect();
+              this.socket = null;
+            }
+          } finally {
+            this.isConnecting = false;
+          }
+        },
+        
+        /**
+         * Set up Socket.IO event listeners
+         */
+        setupSocketListeners() {
+          // Media added by other users
+          this.socket.on('admin:media-added', (data) => {
+            console.log('New media added:', data);
+            if (data.media && Array.isArray(data.media)) {
+              this.mediaLibrary.push(...data.media);
+            }
+          });
+          
+          // User online
+          this.socket.on('admin:user-online', (data) => {
+            console.log('User online:', data);
+            if (!this.onlineUsers.find(u => u.userId === data.userId)) {
+              this.onlineUsers.push({
+                userId: data.userId,
+                username: data.username,
+                mediaCount: 0,
+              });
+            }
+          });
+          
+          // User offline
+          this.socket.on('admin:user-offline', (data) => {
+            console.log('User offline:', data);
+            const index = this.onlineUsers.findIndex(u => u.userId === data.userId);
+            if (index !== -1) {
+              this.onlineUsers.splice(index, 1);
+            }
+          });
+          
+          // Stream request from another user
+          this.socket.on('admin:stream-request', (data) => {
+            this.handleStreamRequest(data);
+          });
+          
+          // Error handling
+          this.socket.on('admin:error', (data) => {
+            console.error('Socket error:', data);
+            alert(`Error: ${data.message}`);
+          });
+        },
+        
+        /**
+         * Load media library from server
+         */
+        async loadMediaLibrary() {
+          try {
+            const response = await fetch('/admin/api/admin/media');
+            const result = await response.json();
+            
+            if (result.success) {
+              this.mediaLibrary = result.data;
+            }
+          } catch (error) {
+            console.error('Failed to load media library:', error);
+          }
+        },
+        
+        /**
+         * Add a folder and scan for media
+         */
+        async addFolder() {
+          if (!this.folderPath.trim()) {
+            return;
+          }
+          
+          this.isScanning = true;
+          this.scanMessage = null;
+          
+          try {
+            // Emit scan-folder event
+            this.socket.emit('admin:scan-folder', {
+              userId: this.userId,
+              folderPath: this.folderPath.trim(),
+            });
+            
+            // Wait for completion
+            await new Promise((resolve, reject) => {
+              const timeout = setTimeout(() => reject(new Error('Scan timeout')), 60000);
+              
+              this.socket.once('admin:scan-complete', (data) => {
+                clearTimeout(timeout);
+                this.scanMessage = {
+                  type: 'success',
+                  text: `Successfully added ${data.mediaCount} media files!`,
+                };
+                resolve();
+              });
+              
+              this.socket.once('admin:error', (data) => {
+                clearTimeout(timeout);
+                this.scanMessage = {
+                  type: 'error',
+                  text: data.message || 'Failed to scan folder',
+                };
+                reject(new Error(data.message));
+              });
+            });
+            
+            // Reload media library
+            await this.loadMediaLibrary();
+            
+            // Clear folder path
+            this.folderPath = '';
+          } catch (error) {
+            console.error('Folder scan error:', error);
+            if (!this.scanMessage) {
+              this.scanMessage = {
+                type: 'error',
+                text: error.message || 'Failed to scan folder',
+              };
+            }
+          } finally {
+            this.isScanning = false;
+          }
+        },
+        
+        /**
+         * Play a media item
+         */
+        playMedia(media) {
+          this.socket.emit('admin:play-media', {
+            mediaId: media.id,
+            requesterId: this.userId,
+            guildId: this.guildId,
+            displayFull: true,
+          });
+          
+          // Show feedback
+          this.socket.once('admin:play-success', () => {
+            alert(`Playing: ${media.filename}`);
+          });
+        },
+        
+        /**
+         * Handle stream request from another user
+         */
+        handleStreamRequest(data) {
+          const { mediaId, requesterId, guildId } = data;
+          
+          // Find the media item
+          const media = this.mediaLibrary.find(m => m.id === mediaId);
+          if (!media) {
+            return;
+          }
+          
+          // Generate stream URL
+          const streamUrl = `${window.location.origin}/admin/api/admin/media/${mediaId}/stream`;
+          
+          // Send response
+          this.socket.emit('admin:stream-response', {
+            mediaId,
+            requesterId,
+            guildId,
+            streamUrl,
+          });
+          
+          console.log(`Provided stream for ${media.filename} to user ${requesterId}`);
+        },
+        
+        /**
+         * Send a text/media message
+         */
+        sendMessage() {
+          if (!this.messageText.trim() && !this.messageUrl.trim()) {
+            this.messageStatus = {
+              type: 'error',
+              text: 'Please enter text or URL',
+            };
+            return;
+          }
+          
+          this.socket.emit('admin:send-message', {
+            userId: this.userId,
+            guildId: this.guildId,
+            text: this.messageText.trim() || null,
+            url: this.messageUrl.trim() || null,
+          });
+          
+          this.socket.once('admin:message-sent', () => {
+            this.messageStatus = {
+              type: 'success',
+              text: 'Message sent successfully!',
+            };
+            this.messageText = '';
+            this.messageUrl = '';
+            
+            setTimeout(() => {
+              this.messageStatus = null;
+            }, 3000);
+          });
+        },
+        
+        /**
+         * Generate and play text-to-speech
+         */
+        speak() {
+          if (!this.ttsText.trim()) {
+            return;
+          }
+          
+          this.isSpeaking = true;
+          this.ttsStatus = null;
+          
+          this.socket.emit('admin:speak', {
+            userId: this.userId,
+            guildId: this.guildId,
+            text: this.ttsText.trim(),
+            voice: 'fr',
+          });
+          
+          this.socket.once('admin:speak-success', () => {
+            this.ttsStatus = {
+              type: 'success',
+              text: 'Speech generated and queued!',
+            };
+            this.ttsText = '';
+            this.isSpeaking = false;
+            
+            setTimeout(() => {
+              this.ttsStatus = null;
+            }, 3000);
+          });
+          
+          this.socket.once('admin:error', () => {
+            this.isSpeaking = false;
+          });
+        },
+        
+        /**
+         * Stop current media
+         */
+        stopCurrent() {
+          this.socket.emit('admin:stop', {
+            guildId: this.guildId,
+          });
+          
+          this.socket.once('admin:stop-success', () => {
+            console.log('Media stopped');
+          });
+        },
+        
+        /**
+         * Format duration in seconds to MM:SS
+         */
+        formatDuration(seconds) {
+          const mins = Math.floor(seconds / 60);
+          const secs = Math.floor(seconds % 60);
+          return `${mins}:${secs.toString().padStart(2, '0')}`;
+        },
+        
+        /**
+         * Logout and disconnect
+         */
+        logout() {
+          if (this.socket) {
+            this.socket.disconnect();
+          }
+          
+          this.isAuthenticated = false;
+          this.userId = null;
+          this.username = '';
+          this.mediaLibrary = [];
+          this.onlineUsers = [];
+        },
+      },
+    }).mount('#app');
+  </script>
+</body>
+</html>
