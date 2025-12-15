@@ -10,6 +10,13 @@
   <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
   <script src="https://cdn.vidstack.io/player@1.12.13" type="module"></script>
   <style>
+    /* Force la transparence de base pour l'overlay Electron */
+    html, body {
+      background: transparent !important;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Evite les scrollbars */
+    }
     media-player.is-short {
       aspect-ratio: 9 / 16;
     }
@@ -42,16 +49,54 @@
   </div>
 
   <script>
+    function getTikTokId(url) {
+      if (!url) return null;
+      const regex =
+        /\bhttps?:\/\/(?:m|www|vm)\.tiktok\.com\/(?:.*\b(?:(?:usr|v|embed|user|video)\/|\?shareId=|\&item_id=)(\d+)|([^\/]+))/gm;
+      const match = regex.exec(url);
+      return match ? match[1] || match[2] : null;
+    }
+
     function generateImg(src, displayFull) {
-      return '<img id="message-img" ' + (displayFull ? 'class="aspect-auto w-full h-full max-w-[100vw] max-h-[100vh]"' : '') + ' src="' + src + '" />';
+      return `<img id="message-img" src="${src}" style="width: auto; height: 100vh; max-width: 100vw; object-fit: contain; display: block; margin: auto;" />`;
     }
 
     function generateAudioVideo(src, displayFull, mediaIsShort) {
-      return '<media-player id="message-player" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' src="' + src + '" autoplay>' +
-        '<media-provider></media-provider>' +
-        '<media-audio-layout></media-audio-layout>' +
-        '<media-video-layout></media-video-layout>' +
-        '</media-player>';
+      var finalSrc = src;
+      var isShortUrl = src && src.includes('/shorts/');
+      if (isShortUrl) {
+        finalSrc = src.replace('/shorts/', '/watch?v=');
+      }
+
+      // Si c'est un Short (détecté par URL ou métadonnée), on force le ratio 9:16 centré avec fond transparent
+      if (mediaIsShort || isShortUrl) {
+           return `<div style="display: flex; justify: center; align-items: center; width: 100vw; height: 100vh; background: transparent;">
+                    <media-player id="message-player" src="${finalSrc}" autoplay style="aspect-ratio: 9/16; height: 100vh; width: auto; border: none; overflow: hidden; background: transparent;">
+                      <media-provider></media-provider>
+                      <media-audio-layout></media-audio-layout>
+                      <media-video-layout></media-video-layout>
+                    </media-player>
+                  </div>`;
+      }
+
+      // Video normale
+      return `<media-player id="message-player" src="${finalSrc}" autoplay style="width: 100vw; height: 100vh; border: none; overflow: hidden; background: transparent;">
+        <media-provider></media-provider>
+        <media-audio-layout></media-audio-layout>
+        <media-video-layout></media-video-layout>
+      </media-player>`;
+    }
+
+    function generateTikTok(src, displayFull) {
+        const id = getTikTokId(src);
+        if (!id) return '';
+        // TikTok en 9:16 centré strict.
+        // Retour à la version stable (sans scale, sans son forcé via scraping)
+        return `<div style="display: flex; justify-content: center; align-items: center; width: 100vw; height: 100vh; background: transparent;">
+                  <iframe src="https://www.tiktok.com/embed/v2/${id}?autoPlay=1&mute=0" 
+                   style="aspect-ratio: 9/16; height: 100vh; width: auto; border: none; background: transparent;" 
+                   frameborder="0" allowtransparency="true" allow="autoplay; encrypted-media; fullscreen;" allowfullscreen></iframe>
+                </div>`;
     }
 
     function displayAuthor(authorUsername, authorPictureURL) {
@@ -86,7 +131,10 @@
       element.innerHTML = '';
 
       if (data.mediaContentType) {
-        if (data.mediaContentType.indexOf('image') === 0) {
+        if (data.mediaContentType === 'embed/tiktok') {
+             // Revert à l'iframe direct (centré, scale 1.3, pas de son garanti mais affichage ok)
+             element.innerHTML = generateTikTok(data.media || data.url, data.displayFull);
+        } else if (data.mediaContentType.indexOf('image') === 0) {
           element.innerHTML = generateImg(data.media || data.url, data.displayFull);
         } else {
           element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull, data.mediaIsShort);
