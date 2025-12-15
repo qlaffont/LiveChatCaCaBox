@@ -57,6 +57,7 @@
     "reflect-metadata": "^0.2.1",
     "regenerator-runtime": "^0.14.1",
     "rosetty": "^3.0.22",
+    "sharp": "^0.34.5",
     "socket.io": "^4.7.4",
     "tslib": "^2.6.2",
     "unify-errors": "^1.2.202",

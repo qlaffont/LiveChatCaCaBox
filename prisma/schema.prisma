@@ -31,3 +31,48 @@ model Guild {
   maxMediaTime     Int?
   displayMediaFull Boolean   @default(false)
 }
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  socketId  String?
+  isOnline  Boolean  @default(false)
+  lastSeen  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  folders     MediaFolder[]
+  mediaItems  MediaItem[]
+}
+
+model MediaFolder {
+  id         String   @id @default(uuid())
+  userId     String
+  folderPath String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mediaItems MediaItem[]
+
+  @@index([userId])
+}
+
+model MediaItem {
+  id           String   @id @default(uuid())
+  folderId     String
+  userId       String
+  filename     String
+  fileType     String
+  fileSize     Int
+  duration     Float?
+  thumbnailUrl String?
+  metadata     String?
+  createdAt    DateTime @default(now())
+
+  folder MediaFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  owner  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([folderId])
+  @@index([userId])
+  @@index([fileType])
+}

@@ -1,10 +1,14 @@
 import { startCase } from 'lodash';
 import { ClientRoutes } from '../components/client/clientRoutes';
+import { AdminRoutes } from '../components/admin/adminRoutes';
 
 export const loadRoutes = (fastify: FastifyCustomInstance) => {
   const routes = [
     {
       '/client': ClientRoutes,
+    },
+    {
+      '/admin': AdminRoutes,
     },
   ];
 
