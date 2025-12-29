@@ -45,7 +45,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
     });
 
     socket.on('join-room', (id) => {
-      logger.debug(`Join room :  ${socket.id} -> ${id}`);
+      logger.info(`🔗 Socket ${socket.id} joining room: ${id}`);
       socket.join(id);
     });
 
@@ -116,21 +116,60 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
         // Scan the folder
         const mediaItems = await scanMediaFolder(folderPath);
 
-        // Create folder in database
-        const folder = await prisma.mediaFolder.create({
-          data: {
+        // Check if folder already exists for this user
+        let folder = await prisma.mediaFolder.findFirst({
+          where: {
             userId,
             folderPath,
-            isActive: true,
+          },
+          include: {
+            mediaItems: {
+              select: {
+                filename: true,
+              },
+            },
           },
         });
 
-        // Create media items in database
+        if (!folder) {
+          // Create new folder
+          folder = await prisma.mediaFolder.create({
+            data: {
+              userId,
+              folderPath,
+              isActive: true,
+            },
+            include: {
+              mediaItems: {
+                select: {
+                  filename: true,
+                },
+              },
+            },
+          });
+        }
+
+        // Get list of existing filenames
+        const existingFilenames = new Set(folder.mediaItems.map((item) => item.filename));
+
+        // Filter out items that already exist
+        const newMediaItems = mediaItems.filter((item) => !existingFilenames.has(item.filename));
+
+        if (newMediaItems.length === 0) {
+          logger.info(`No new media items found in ${folderPath}`);
+          socket.emit('admin:scan-complete', {
+            folderId: folder.id,
+            mediaCount: 0,
+          });
+          return;
+        }
+
+        // Create new media items in database
         const createdItems = await Promise.all(
-          mediaItems.map((item) =>
+          newMediaItems.map((item) =>
             prisma.mediaItem.create({
               data: {
-                folderId: folder.id,
+                folderId: folder!.id,
                 userId,
                 filename: item.filename,
                 fileType: item.fileType,
@@ -184,9 +223,9 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
      */
     socket.on(
       'admin:play-media',
-      async (data: { mediaId: string; requesterId: string; guildId: string; displayFull?: boolean }) => {
+      async (data: { mediaId: string; requesterId: string; guildId: string; displayFull?: boolean; text?: string }) => {
         try {
-          const { mediaId, requesterId, guildId, displayFull } = data;
+          const { mediaId, requesterId, guildId, displayFull, text } = data;
 
           // Find the media item
           const mediaItem = await prisma.mediaItem.findUnique({
@@ -207,14 +246,14 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
           // Check if requester owns the media
           if (mediaItem.userId === requesterId) {
             // Play directly - construct local URL
-            const mediaUrl = `${env.API_URL}/admin/api/admin/media/${mediaId}/stream`;
+            const mediaUrl = `${env.API_URL}/admin/api/media/${mediaId}/stream`;
 
             // Add to queue
             await prisma.queue.create({
               data: {
                 content: JSON.stringify({
                   url: null,
-                  text: null,
+                  text: text || null,
                   media: mediaUrl,
                   mediaContentType: mediaItem.fileType === 'video' ? 'video/mp4' : 'image/jpeg',
                   mediaDuration: await getDurationFromGuildId(
@@ -239,7 +278,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
               mediaId,
             });
 
-            logger.info(`Media ${mediaId} added to queue by owner ${requesterId}`);
+            logger.info(`📺 Media ${mediaId} added to queue for guild: ${guildId}, will be sent to room: messages-${guildId}`);
           } else {
             // Request stream from owner
             const ownerSocketId = connectedUsers.get(mediaItem.userId);

@@ -14,9 +14,11 @@ export const executeMessagesWorker = async (fastify: FastifyCustomInstance) => {
   });
 
   if (lastMessage === null) {
-    logger.debug(`[SOCKET] No new message`);
+    logger.debug(`⏳ No message to execute yet`);
     return;
   }
+
+  logger.info(`🎯 Found message to execute: ${lastMessage.id} for guild ${lastMessage.discordGuildId}`);
 
   //Check if queue is playing
   const guild = await prisma.guild.findFirst({
@@ -59,6 +61,7 @@ export const executeMessagesWorker = async (fastify: FastifyCustomInstance) => {
   }
 
   fastify.io.to(`messages-${lastMessage.discordGuildId}`).emit('new-message', lastMessage);
+  logger.info(`📤 Sending new message to room "messages-${lastMessage.discordGuildId}": ${lastMessage.id}`);
   logger.debug(`[SOCKET] New message ${lastMessage.id} (guild: ${lastMessage.discordGuildId}): ${lastMessage.content}`);
 
   await prisma.queue.delete({ where: { id: lastMessage.id } });

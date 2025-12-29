@@ -20,9 +20,9 @@ export const AdminRoutes = () =>
     });
 
     /**
-     * GET /api/admin/media - Get all shared media with metadata
+     * GET /api/media - Get all shared media with metadata
      */
-    fastify.get('/api/admin/media', async function (req, reply) {
+    fastify.get('/api/media', async function (req, reply) {
       try {
         const mediaItems = await prisma.mediaItem.findMany({
           include: {
@@ -59,11 +59,12 @@ export const AdminRoutes = () =>
     });
 
     /**
-     * GET /api/admin/media/:id/stream - Stream a specific media file
+     * GET /api/media/:id/stream - Stream a specific media file
      */
-    fastify.get('/api/admin/media/:id/stream', async function (req, reply) {
+    fastify.get('/api/media/:id/stream', async function (req, reply) {
       try {
         const { id } = req.params as { id: string };
+        console.log('🎬 Stream request for media:', id);
 
         // Find the media item
         const mediaItem = await prisma.mediaItem.findUnique({

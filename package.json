@@ -47,6 +47,7 @@
     "vitest": "^4.0.15"
   },
   "dependencies": {
+    "@fastify/static": "^6.6.0",
     "@gquittet/graceful-server": "^4.0.8",
     "@prisma/client": "^5.10.2",
     "@socket.io/postgres-emitter": "^0.1.0",
