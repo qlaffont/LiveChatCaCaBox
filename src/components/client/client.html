@@ -132,7 +132,7 @@
       socket.on('connect', () => {
         //Get query param
         const urlParams = new URLSearchParams(window.location.search);
-        const guildId = urlParams.get('guildId') || 'default';
+        const guildId = urlParams.get('guildId') || '1183396070823313418';
         console.log('🔗 Joining room for guild:', guildId);
         socket.emit("join-room", "messages-" + guildId);
       });

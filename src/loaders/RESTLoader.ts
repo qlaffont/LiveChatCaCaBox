@@ -19,4 +19,9 @@ export const loadRoutes = (fastify: FastifyCustomInstance) => {
     const routeName = startCase(prefix.substring(1).replaceAll('/', ' '));
     logger.info(`[REST] ${routeName} Routes loaded (${prefix})`);
   }
+
+  // Redirect root to admin
+  fastify.get('/', async (req, reply) => {
+    return reply.redirect('/admin');
+  });
 };

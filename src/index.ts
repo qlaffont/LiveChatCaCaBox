@@ -10,8 +10,8 @@ import { env } from './services/env';
 
   const fastify = await runServer();
 
-  fastify.ready(async () => {});
-  fastify.listen({ port, host: '::', listenTextResolver: () => `[SERVER] ${rosetty.t('serverStarted')!}` }, (err) => {
+  fastify.ready(async () => { });
+  fastify.listen({ port, host: '0.0.0.0', listenTextResolver: () => `[SERVER] ${rosetty.t('serverStarted')!}` }, (err) => {
     if (err) {
       logger.fatal(`${err}`);
       process.exit(1);
