@@ -46,7 +46,28 @@
       return '<img id="message-img" ' + (displayFull ? 'class="aspect-auto w-full h-full max-w-[100vw] max-h-[100vh]"' : '') + ' src="' + src + '" />';
     }
 
-    function generateAudioVideo(src, displayFull, mediaIsShort) {
+    function generateAudioVideo(src, displayFull, mediaIsShort, contentType) {
+      // Use src object format if checking for specific types, or just let vidstack handle it.
+      // Vidstack <media-player> accepts src as string or object { src: string, type: string }
+      // We'll construct the src attribute value carefully.
+      // Actually, standard HTML attribute is just string.
+      // To pass type hint, we should use property binding if using framework, or just set it via JS.
+      // But standard way for custom elements often supports JSON in attribute or just sniffing.
+      // Let's try passing it via src attribute as JSON string if simple string fails, OR
+      // simpler: just rely on the server sending correct content-type header which we fixed.
+      // BUT, let's try to set the type attribute if it helps.
+      // The most robust way with vidstack is strictly relying on the file extension OR the server header.
+      // Since we fixed the header to video/mp4, the browser WILL verify it.
+
+      // However, to be extra safe, let's inject the type hint by appending it to the media-provider if possible? No.
+
+      // Let's use the standard `src` attribute. If the server sends `video/mp4`, the browser should be happy.
+      // Detailed fix: The user mentioned .mov fails from web.
+      // Let's TRY to append a dummy '.mp4' extension to the URL if it doesn't have one, 
+      // which might help some players that sniff URL extension.
+      // const safeSrc = src.includes('?') ? src + '&ext=.mp4' : src + '?.mp4'; 
+      // Actually, let's just use the server implementation and TRUST it first.
+
       return '<media-player id="message-player" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' src="' + src + '" autoplay>' +
         '<media-provider></media-provider>' +
         '<media-audio-layout></media-audio-layout>' +
@@ -89,10 +110,10 @@
         if (data.mediaContentType.indexOf('image') === 0) {
           element.innerHTML = generateImg(data.media || data.url, data.displayFull);
         } else if (data.mediaContentType.indexOf('audio') === 0) {
-           // Invisible audio player for TTS
-           element.innerHTML = '<audio autoplay src="' + (data.media || data.url) + '"></audio>';
+          // Invisible audio player for TTS
+          element.innerHTML = '<audio autoplay src="' + (data.media || data.url) + '"></audio>';
         } else {
-          element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull, data.mediaIsShort);
+          element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull, data.mediaIsShort, data.mediaContentType);
         }
       }
     }

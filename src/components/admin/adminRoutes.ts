@@ -61,7 +61,7 @@ export const AdminRoutes = () =>
     /**
      * GET /api/media/:id/stream - Stream a specific media file
      */
-    fastify.get('/api/media/:id/stream', async function (req, reply) {
+    const streamHandler = async function (req, reply) {
       try {
         const { id } = req.params as { id: string };
         console.log('🎬 Stream request for media:', id);
@@ -103,18 +103,18 @@ export const AdminRoutes = () =>
 
         // Determine content type
         let contentType = 'application/octet-stream';
+        const ext = path.extname(mediaItem.filename).toLowerCase();
+
         if (mediaItem.fileType === 'image') {
-          const ext = path.extname(mediaItem.filename).toLowerCase();
           if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
           else if (ext === '.png') contentType = 'image/png';
           else if (ext === '.gif') contentType = 'image/gif';
           else if (ext === '.webp') contentType = 'image/webp';
           else if (ext === '.bmp') contentType = 'image/bmp';
         } else if (mediaItem.fileType === 'video') {
-          const ext = path.extname(mediaItem.filename).toLowerCase();
           if (ext === '.mp4') contentType = 'video/mp4';
           else if (ext === '.webm') contentType = 'video/webm';
-          else if (ext === '.mov') contentType = 'video/quicktime';
+          else if (ext === '.mov') contentType = 'video/quicktime'; // Keep quicktime, let browser decide based on URL
           else if (ext === '.avi') contentType = 'video/x-msvideo';
           else if (ext === '.mkv') contentType = 'video/x-matroska';
         }
@@ -130,5 +130,15 @@ export const AdminRoutes = () =>
           error: 'Failed to stream media',
         });
       }
-    });
+    };
+
+    /**
+     * GET /api/media/:id/stream - Stream a specific media file
+     */
+    fastify.get('/api/media/:id/stream', streamHandler);
+
+    /**
+     * GET /api/media/:id/stream/:filename - Stream with filename for browser compatibility
+     */
+    fastify.get('/api/media/:id/stream/:filename', streamHandler);
   };

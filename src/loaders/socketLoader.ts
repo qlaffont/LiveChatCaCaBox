@@ -1,7 +1,8 @@
 import path from 'path';
 import { scanMediaFolder } from '../services/media-scanner';
+import { scanMediaFolder } from '../services/media-scanner';
 import { QueueType } from '../services/prisma/loadPrisma';
-import { getDurationFromGuildId, getDisplayMediaFullFromGuildId } from '../services/utils';
+import { getDurationFromGuildId, getDisplayMediaFullFromGuildId, getMimeType } from '../services/utils';
 
 // Track connected admin users
 const connectedUsers = new Map<string, string>(); // userId -> socketId
@@ -250,7 +251,13 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
           });
 
           // Play directly - construct local URL
-          const mediaUrl = `${env.API_URL}/admin/api/media/${mediaId}/stream`;
+          // Use filename in URL for better browser compatibility
+          // Trick: for .mov, use .mp4 extension in URL to help browser sniffing
+          const safeFilename = mediaItem.filename.endsWith('.mov')
+            ? mediaItem.filename.replace('.mov', '.mp4')
+            : mediaItem.filename;
+
+          const mediaUrl = `${env.API_URL}/admin/api/media/${mediaId}/stream/${encodeURIComponent(safeFilename)}`;
 
           // Add to queue
           await prisma.queue.create({
@@ -259,7 +266,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
                 url: null,
                 text: text || null,
                 media: mediaUrl,
-                mediaContentType: mediaItem.fileType === 'video' ? 'video/mp4' : 'image/jpeg',
+                mediaContentType: getMimeType(mediaItem.filename, mediaItem.fileType),
                 mediaDuration: await getDurationFromGuildId(
                   mediaItem.duration ? Math.ceil(mediaItem.duration) : undefined,
                   guildId,
@@ -320,7 +327,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
                 url: null,
                 text: null,
                 media: streamUrl,
-                mediaContentType: mediaItem.fileType === 'video' ? 'video/mp4' : 'image/jpeg',
+                mediaContentType: getMimeType(mediaItem.filename, mediaItem.fileType),
                 mediaDuration: await getDurationFromGuildId(
                   mediaItem.duration ? Math.ceil(mediaItem.duration) : undefined,
                   guildId,
