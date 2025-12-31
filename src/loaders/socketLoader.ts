@@ -243,6 +243,11 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
             return;
           }
 
+          // Find the requester (user playing the media)
+          const requester = await prisma.user.findUnique({
+            where: { id: requesterId },
+          });
+
           // Play directly - construct local URL
           const mediaUrl = `${env.API_URL}/admin/api/media/${mediaId}/stream`;
 
@@ -262,7 +267,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
                 mediaIsShort: false,
               }),
               type: QueueType.MESSAGE,
-              author: mediaItem.owner.username,
+              author: requester ? requester.username : mediaItem.owner.username,
               authorImage: null,
               discordGuildId: guildId,
               duration: await getDurationFromGuildId(
