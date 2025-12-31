@@ -88,6 +88,9 @@
       if (data.mediaContentType) {
         if (data.mediaContentType.indexOf('image') === 0) {
           element.innerHTML = generateImg(data.media || data.url, data.displayFull);
+        } else if (data.mediaContentType.indexOf('audio') === 0) {
+           // Invisible audio player for TTS
+           element.innerHTML = '<audio autoplay src="' + (data.media || data.url) + '"></audio>';
         } else {
           element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull, data.mediaIsShort);
         }

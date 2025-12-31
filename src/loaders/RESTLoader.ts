@@ -1,8 +1,15 @@
 import { startCase } from 'lodash';
+import path from 'path';
 import { ClientRoutes } from '../components/client/clientRoutes';
 import { AdminRoutes } from '../components/admin/adminRoutes';
 
 export const loadRoutes = (fastify: FastifyCustomInstance) => {
+  // Serve TTS files
+  fastify.register(require('@fastify/static'), {
+    root: path.join(process.cwd(), 'uploads', 'tts'),
+    prefix: '/tts/',
+  });
+
   const routes = [
     {
       '/client': ClientRoutes,

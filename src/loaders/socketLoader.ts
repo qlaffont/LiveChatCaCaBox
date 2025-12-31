@@ -1,3 +1,4 @@
+import path from 'path';
 import { scanMediaFolder } from '../services/media-scanner';
 import { QueueType } from '../services/prisma/loadPrisma';
 import { getDurationFromGuildId, getDisplayMediaFullFromGuildId } from '../services/utils';
@@ -435,10 +436,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
         const filePath = await gtts.promisedGtts(text, voice || 'fr');
 
         // Create a public URL for the audio file
-        // Note: In a real implementation, we'd need to serve this file
-        // For now, we'll just use the file path which won't work remotely
-        // This needs to be improved to upload the file somewhere accessible
-        const audioUrl = `${env.API_URL}/tts/${filePath.split('/').pop()}`;
+        const audioUrl = `${env.API_URL}/tts/${path.basename(filePath)}`;
 
         // Get audio duration
         const contentInfo = await getContentInformationsFromUrl(filePath);

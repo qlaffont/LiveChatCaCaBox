@@ -1,14 +1,17 @@
 import { join } from 'path';
 
-import { unlink } from 'fs/promises';
+import { mkdir, unlink } from 'fs/promises';
 import { createReadStream } from 'fs';
 import gTTS from 'gtts';
 
 export const promisedGtts = (voice, lang) =>
-  new Promise<string>((resolve, reject) => {
+  new Promise<string>(async (resolve, reject) => {
     const gtts = new gTTS(voice, lang);
 
-    const filePath = join(__dirname, `${Date.now()}-${Math.ceil(Math.random() * 100)}.mp3`);
+    const uploadsDir = join(process.cwd(), 'uploads', 'tts');
+    await mkdir(uploadsDir, { recursive: true });
+
+    const filePath = join(uploadsDir, `${Date.now()}-${Math.ceil(Math.random() * 100)}.mp3`);
 
     gtts.save(filePath, function (err) {
       if (err) {
