@@ -4,6 +4,8 @@ import { scanMediaFolder } from '../services/media-scanner';
 import { QueueType } from '../services/prisma/loadPrisma';
 import { getDurationFromGuildId, getDisplayMediaFullFromGuildId, getMimeType } from '../services/utils';
 
+const DEFAULT_AVATAR_URL = 'https://cdn.discordapp.com/embed/avatars/0.png';
+
 // Track connected admin users
 const connectedUsers = new Map<string, string>(); // userId -> socketId
 
@@ -276,7 +278,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
               }),
               type: QueueType.MESSAGE,
               author: requester ? requester.username : mediaItem.owner.username,
-              authorImage: null,
+              authorImage: DEFAULT_AVATAR_URL,
               discordGuildId: guildId,
               duration: await getDurationFromGuildId(
                 mediaItem.duration ? Math.ceil(mediaItem.duration) : undefined,
@@ -337,7 +339,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
               }),
               type: QueueType.MESSAGE,
               author: mediaItem.owner.username,
-              authorImage: null,
+              authorImage: DEFAULT_AVATAR_URL,
               discordGuildId: guildId,
               duration: await getDurationFromGuildId(
                 mediaItem.duration ? Math.ceil(mediaItem.duration) : undefined,
@@ -396,7 +398,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
               }),
               type: QueueType.MESSAGE,
               author: user.username,
-              authorImage: null,
+              authorImage: DEFAULT_AVATAR_URL,
               discordGuildId: guildId,
               duration: await getDurationFromGuildId(undefined, guildId),
             },
@@ -464,7 +466,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
             }),
             type: QueueType.VOCAL,
             author: user.username,
-            authorImage: null,
+            authorImage: DEFAULT_AVATAR_URL,
             discordGuildId: guildId,
             duration: await getDurationFromGuildId(
               contentInfo.mediaDuration ? Math.ceil(contentInfo.mediaDuration) : undefined,
