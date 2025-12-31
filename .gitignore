@@ -87,3 +87,9 @@ ytdl.json
 # Auto-start generated files
 launch-bot.vbs
 create-shortcut.ps1
+
+# Cloudflare Tunnel
+cloudflared.exe
+
+# TTS Audio Files
+src/services/*.mp3

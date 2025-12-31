@@ -243,63 +243,40 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
             return;
           }
 
-          // Check if requester owns the media
-          if (mediaItem.userId === requesterId) {
-            // Play directly - construct local URL
-            const mediaUrl = `${env.API_URL}/admin/api/media/${mediaId}/stream`;
+          // Play directly - construct local URL
+          const mediaUrl = `${env.API_URL}/admin/api/media/${mediaId}/stream`;
 
-            // Add to queue
-            await prisma.queue.create({
-              data: {
-                content: JSON.stringify({
-                  url: null,
-                  text: text || null,
-                  media: mediaUrl,
-                  mediaContentType: mediaItem.fileType === 'video' ? 'video/mp4' : 'image/jpeg',
-                  mediaDuration: await getDurationFromGuildId(
-                    mediaItem.duration ? Math.ceil(mediaItem.duration) : undefined,
-                    guildId,
-                  ),
-                  displayFull: displayFull ?? (await getDisplayMediaFullFromGuildId(guildId)),
-                  mediaIsShort: false,
-                }),
-                type: QueueType.MESSAGE,
-                author: mediaItem.owner.username,
-                authorImage: null,
-                discordGuildId: guildId,
-                duration: await getDurationFromGuildId(
+          // Add to queue
+          await prisma.queue.create({
+            data: {
+              content: JSON.stringify({
+                url: null,
+                text: text || null,
+                media: mediaUrl,
+                mediaContentType: mediaItem.fileType === 'video' ? 'video/mp4' : 'image/jpeg',
+                mediaDuration: await getDurationFromGuildId(
                   mediaItem.duration ? Math.ceil(mediaItem.duration) : undefined,
                   guildId,
                 ),
-              },
-            });
+                displayFull: displayFull ?? (await getDisplayMediaFullFromGuildId(guildId)),
+                mediaIsShort: false,
+              }),
+              type: QueueType.MESSAGE,
+              author: mediaItem.owner.username,
+              authorImage: null,
+              discordGuildId: guildId,
+              duration: await getDurationFromGuildId(
+                mediaItem.duration ? Math.ceil(mediaItem.duration) : undefined,
+                guildId,
+              ),
+            },
+          });
 
-            socket.emit('admin:play-success', {
-              mediaId,
-            });
+          socket.emit('admin:play-success', {
+            mediaId,
+          });
 
-            logger.info(`📺 Media ${mediaId} added to queue for guild: ${guildId}, will be sent to room: messages-${guildId}`);
-          } else {
-            // Request stream from owner
-            const ownerSocketId = connectedUsers.get(mediaItem.userId);
-
-            if (!ownerSocketId) {
-              socket.emit('admin:error', {
-                message: 'Media owner is not online',
-              });
-              return;
-            }
-
-            // Send stream request to owner
-            fastify.io.to(ownerSocketId).emit('admin:stream-request', {
-              mediaId,
-              requesterId,
-              guildId,
-              displayFull,
-            });
-
-            logger.info(`Stream request sent to owner ${mediaItem.userId} for media ${mediaId}`);
-          }
+          logger.info(`📺 Media ${mediaId} added to queue for guild: ${guildId}, will be sent to room: messages-${guildId}`);
         } catch (error) {
           logger.error('Error playing media:', error);
           socket.emit('admin:error', {
