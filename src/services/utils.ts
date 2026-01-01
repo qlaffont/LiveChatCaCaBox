@@ -1,5 +1,11 @@
 import path from 'path';
 
+export const anonymizeId = (id: string | undefined | null) => {
+  if (!id) return 'unknown';
+  if (id.length <= 8) return id;
+  return `${id.substring(0, 4)}...${id.substring(id.length - 4)}`;
+};
+
 export const getMimeType = (filename: string, fileType: 'image' | 'video' | string): string => {
   const ext = path.extname(filename).toLowerCase();
 

@@ -2,7 +2,7 @@ import path from 'path';
 import { scanMediaFolder } from '../services/media-scanner';
 import { scanMediaFolder } from '../services/media-scanner';
 import { QueueType } from '../services/prisma/loadPrisma';
-import { getDurationFromGuildId, getDisplayMediaFullFromGuildId, getMimeType } from '../services/utils';
+import { getDurationFromGuildId, getDisplayMediaFullFromGuildId, getMimeType, anonymizeId } from '../services/utils';
 
 const DEFAULT_AVATAR_URL = 'https://cdn.discordapp.com/embed/avatars/0.png';
 
@@ -291,7 +291,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
             mediaId,
           });
 
-          logger.info(`📺 Media ${mediaId} added to queue for guild: ${guildId}, will be sent to room: messages-${guildId}`);
+          logger.info(`📺 Media ${mediaId} added to queue for guild: ${anonymizeId(guildId)}, will be sent to room: messages-${anonymizeId(guildId)}`);
         } catch (error) {
           logger.error('Error playing media:', error);
           socket.emit('admin:error', {
