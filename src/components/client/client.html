@@ -106,15 +106,44 @@
 
       element.innerHTML = '';
 
+      // Reset styles first
+      element.style = '';
+
+      // Apply Layout if present
+      if (data.layout) {
+        element.style.position = 'absolute';
+        element.style.left = data.layout.x + '%';
+        element.style.top = data.layout.y + '%';
+        element.style.width = data.layout.w + '%';
+        element.style.height = data.layout.h + '%';
+      }
+
+      var contentHtml = '';
       if (data.mediaContentType) {
+        // If layout is active, we force "full" display inside the container
+        const isLayoutActive = !!data.layout;
+        const shouldUseFull = data.displayFull || isLayoutActive;
+
         if (data.mediaContentType.indexOf('image') === 0) {
-          element.innerHTML = generateImg(data.media || data.url, data.displayFull);
+          // For images, if layout is active, ensure it fills the container
+          contentHtml = generateImg(data.media || data.url, shouldUseFull);
+          if (isLayoutActive) {
+            // Patch the generated string to ensure w-full h-full
+            contentHtml = contentHtml.replace('class="', 'class="w-full h-full object-cover ');
+            if (!contentHtml.includes('class="')) contentHtml = contentHtml.replace('<img', '<img class="w-full h-full object-cover"');
+          }
         } else if (data.mediaContentType.indexOf('audio') === 0) {
-          // Invisible audio player for TTS
-          element.innerHTML = '<audio autoplay src="' + (data.media || data.url) + '"></audio>';
+          contentHtml = '<audio autoplay src="' + (data.media || data.url) + '"></audio>';
         } else {
-          element.innerHTML = generateAudioVideo(data.media || data.url, data.displayFull, data.mediaIsShort, data.mediaContentType);
+          // For video/audio
+          contentHtml = generateAudioVideo(data.media || data.url, shouldUseFull, data.mediaIsShort, data.mediaContentType);
+          if (isLayoutActive) {
+            // Force player to fill container
+            // Replace class attribute content to simplistic w-full h-full
+            contentHtml = contentHtml.replace(/class='[^']*'/, "class='w-full h-full !aspect-auto'");
+          }
         }
+        element.innerHTML = contentHtml;
       }
     }
 

@@ -226,9 +226,9 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
      */
     socket.on(
       'admin:play-media',
-      async (data: { mediaId: string; requesterId: string; guildId: string; displayFull?: boolean; text?: string }) => {
+      async (data: { mediaId: string; requesterId: string; guildId: string; displayFull?: boolean; text?: string; layout?: any }) => {
         try {
-          const { mediaId, requesterId, guildId, displayFull, text } = data;
+          const { mediaId, requesterId, guildId, displayFull, text, layout } = data;
 
           // Find the media item
           const mediaItem = await prisma.mediaItem.findUnique({
@@ -274,6 +274,7 @@ export const loadSocket = (fastify: FastifyCustomInstance) => {
                 ),
                 displayFull: displayFull ?? (await getDisplayMediaFullFromGuildId(guildId)),
                 mediaIsShort: false,
+                layout: layout || null,
               }),
               type: QueueType.MESSAGE,
               author: requester ? requester.username : mediaItem.owner.username,
