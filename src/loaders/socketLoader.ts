@@ -1,6 +1,5 @@
 import path from 'path';
 import { scanMediaFolder } from '../services/media-scanner';
-import { scanMediaFolder } from '../services/media-scanner';
 import { QueueType } from '../services/prisma/loadPrisma';
 import { getDurationFromGuildId, getDisplayMediaFullFromGuildId, getMimeType, anonymizeId } from '../services/utils';
 
