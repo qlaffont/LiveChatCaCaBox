@@ -49,10 +49,6 @@
     function generateImg(src, displayFull) {
       return '<img id="message-img" ' + (displayFull ? 'class="aspect-auto w-full h-full max-w-[100vw] max-h-[100vh]"' : '') + ' src="' + src + '" />';
     }
-    
-    document.getElementById('disappear').addEventListener('click', () => {
-      document.getElementById('disappear').style.display = 'none';
-    });
 
     function generateAudioVideo(src, displayFull, mediaIsShort) {
       setTimeout(() => {
@@ -179,6 +175,12 @@
         console.debug("Media stopped !");
         clearTimeout(timeout);
         displayMessage({});
+      });
+
+
+    
+      document.getElementById('disappear').addEventListener('click', () => {
+        document.getElementById('disappear').style.display = 'none';
       });
     });
   </script>
