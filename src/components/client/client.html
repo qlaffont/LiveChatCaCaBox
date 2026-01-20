@@ -64,9 +64,13 @@
             playsInline: true,
             load: "eager",
             autoPlay: true,
+            muted: true, // Required for cross-platform autoplay
           });
 
-          document.querySelector('media-player').addEventListener('can-play')
+          // Unmute after playback starts (workaround for Chrome autoplay policy)
+          document.querySelector('media-player').addEventListener('play', () => {
+            document.querySelector('media-player').muted = false;
+          }, { once: true });
         })();
       }, 100);
 
