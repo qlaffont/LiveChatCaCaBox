@@ -59,6 +59,7 @@
     "tslib": "^2.6.2",
     "unify-errors": "^1.2.202",
     "unify-fastify": "^1.4.24",
+    "vidstack": "1.12.13",
     "youtubei.js": "^15.1.1",
     "zlib-sync": "^0.1.9",
     "zod": "^3.22.4",
