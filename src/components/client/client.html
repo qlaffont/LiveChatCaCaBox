@@ -18,7 +18,7 @@
 </head>
 
 <body>
-  <button>Click it </button>
+  <button id="disappear">Click on me so i can disappear (Chrome issue page should be clicked one time to activate autoplay) </button>
   <div class="absolute top-3 left-3 hidden flex-col items-center z-50" id="author-block">
     <div class="w-fit">
       <div class="border-4 rounded-full border-[#57F287] inline-block">
@@ -49,6 +49,10 @@
     function generateImg(src, displayFull) {
       return '<img id="message-img" ' + (displayFull ? 'class="aspect-auto w-full h-full max-w-[100vw] max-h-[100vh]"' : '') + ' src="' + src + '" />';
     }
+    
+    document.getElementById('disappear').addEventListener('click', () => {
+      document.getElementById('disappear').style.display = 'none';
+    });
 
     function generateAudioVideo(src, displayFull, mediaIsShort) {
       setTimeout(() => {
