@@ -54,7 +54,7 @@
       setTimeout(() => {
 
         (async () => {
-          const player = await VidstackPlayer.create({
+          await VidstackPlayer.create({
             target: '#message-player',
             src: src,
             layout: new VidstackPlayerLayout({
@@ -63,13 +63,20 @@
             crossOrigin: true,
             playsInline: true,
             load: "eager",
-            autoPlay: true,
+            autoplay: true, // lowercase per Vidstack API
             muted: true, // Required for cross-platform autoplay
           });
 
-          // Unmute after playback starts (workaround for Chrome autoplay policy)
-          document.querySelector('media-player').addEventListener('play', () => {
-            document.querySelector('media-player').muted = false;
+          const player = document.querySelector('media-player');
+          // Fallback: explicitly call play() after player is ready
+          player.addEventListener('can-play', async () => {
+            try {
+              await player.play();
+              // Unmute after playback starts
+              player.muted = false;
+            } catch (e) {
+              console.warn('Autoplay blocked, user interaction required:', e);
+            }
           }, { once: true });
         })();
       }, 100);
