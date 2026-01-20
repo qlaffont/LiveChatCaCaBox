@@ -57,7 +57,9 @@
           src: src,
           layout: new VidstackPlayerLayout({
           }),
-          logLevel: 'warn'
+          logLevel: 'warn',
+          crossOrigin: true,
+          playsInline: true,
         });
 
         console.debug(player);
