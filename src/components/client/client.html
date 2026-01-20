@@ -41,17 +41,26 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { VidstackPlayer, VidstackPlayerLayout } from '/client/vidstack.js';
+
     function generateImg(src, displayFull) {
       return '<img id="message-img" ' + (displayFull ? 'class="aspect-auto w-full h-full max-w-[100vw] max-h-[100vh]"' : '') + ' src="' + src + '" />';
     }
 
     function generateAudioVideo(src, displayFull, mediaIsShort) {
-      return '<media-player id="message-player" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' src="' + src + '" autoPlay load="eager" logLevel="debug">' +
-        '<media-provider></media-provider>' +
-        '<media-audio-layout></media-audio-layout>' +
-        '<media-video-layout></media-video-layout>' +
-        '</media-player>';
+      setTimeout(() => {
+
+        const player = VidstackPlayer.create({
+          target: '#message-player',
+          src: src,
+          layout: new VidstackPlayerLayout({
+          }),
+        });
+      }, 100);
+
+      return '<div id="message-player" data-autoplay data-load="eager" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' >' +
+        '</div>';
     }
 
     function displayAuthor(authorUsername, authorPictureURL) {
