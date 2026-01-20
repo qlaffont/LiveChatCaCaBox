@@ -58,14 +58,14 @@
             src: src,
             layout: new VidstackPlayerLayout({
             }),
-            logLevel: 'warn',
+            logLevel: 'debug',
             crossOrigin: true,
             playsInline: true,
             load: "eager",
             autoPlay: true,
           });
 
-          console.debug(player);
+          document.querySelector('media-player').addEventListener('can-play')
         })();
       }, 100);
 
