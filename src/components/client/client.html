@@ -52,17 +52,16 @@
     function generateAudioVideo(src, displayFull, mediaIsShort) {
       setTimeout(() => {
 
-        const player = VidstackPlayer.create({
-          target: '#message-player',
-          src: src,
-          layout: new VidstackPlayerLayout({
-          }),
-          logLevel: 'warn',
-          crossOrigin: true,
-          playsInline: true,
-        });
+        (async () => {
+          const player = await VidstackPlayer.create({
+            target: '#message-player',
+            src: src,
+            layout: new VidstackPlayerLayout({
+            }),
+          });
 
-        console.debug(player);
+          console.debug(player);
+        })();
       }, 100);
 
       return '<div id="message-player" data-autoplay data-load="eager" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' >' +
