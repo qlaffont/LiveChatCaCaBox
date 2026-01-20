@@ -58,13 +58,17 @@
             src: src,
             layout: new VidstackPlayerLayout({
             }),
+            logLevel: 'warn',
+            crossOrigin: true,
+            playsInline: true,
+            load: "eager"
           });
 
           console.debug(player);
         })();
       }, 100);
 
-      return '<div id="message-player" data-autoplay data-load="eager" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' >' +
+      return '<div id="message-player" ' + (displayFull ? "class='h-[100vh] " + (mediaIsShort ? "is-short mx-auto" : "aspect-contain w-[100vw] ") + "'" : "class='aspect-contain " + (mediaIsShort ? "is-short" : "") + "'") + ' >' +
         '</div>';
     }
 
