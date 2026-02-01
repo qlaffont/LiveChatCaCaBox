@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -6,9 +7,9 @@
     integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
     crossorigin="anonymous"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
-  <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
-  <script src="https://cdn.vidstack.io/player@1.12.13" type="module"></script>
+  <link rel="stylesheet" href="/client/vidstack.theme.css" />
+  <link rel="stylesheet" href="/client/vidstack.video.css" />
+  <script src="/client/vidstack.js" type="module"></script>
   <style>
     /* Force la transparence de base pour l'overlay Electron */
     html, body {
@@ -24,6 +25,7 @@
 </head>
 
 <body>
+  <button class="absolute z-50 rounded-full bg-red-500 px-4" id="disappear">Click on me so i can disappear <br/>(Fix Autoplay, Browser Source > Right Click > Interact / Interragir <br/>and click on button.) </button>
   <div class="absolute top-3 left-3 hidden flex-col items-center z-50" id="author-block">
     <div class="w-fit">
       <div class="border-4 rounded-full border-[#57F287] inline-block">
@@ -192,6 +194,12 @@
         console.debug("Media stopped !");
         clearTimeout(timeout);
         displayMessage({});
+      });
+
+
+    
+      document.getElementById('disappear').addEventListener('click', () => {
+        document.getElementById('disappear').style.display = 'none';
       });
     });
   </script>
